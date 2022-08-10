@@ -19,10 +19,13 @@
 #
 
 import json
+import logging
 import os
 import sys
 import traceback
-from ikalog.utils import IkaUtils
+
+
+logger = logging.getLogger()
 
 def _get_plugins_list(engine):
     r = {}
@@ -56,7 +59,7 @@ def write_to_file(engine, filename):
         json_file.write(json.dumps(config)) #, separators=(',', ':')) + '\n')
         json_file.close()
     except:
-        print("JSON: Failed to write JSON file")
+        logger.error("JSON: Failed to write JSON file")
         IkaUtils.dprint(traceback.format_exc())
 
 
@@ -65,18 +68,18 @@ def read_from_file(engine, filename):
         f = open(filename, 'r')
         config = json.load(f)
     except FileNotFoundError as e:
-        IkaUtils.dprint("No configuration file to read.")
+        logger.info("No configuration file to read.")
         return False
 
     except:
-        IkaUtils.dprint("JSON: Failed to read JSON file")
+        logger.info("JSON: Failed to read JSON file")
         IkaUtils.dprint(traceback.format_exc())
         return False
 
     plugins = _get_plugins_list(engine)
     for plugin_name in plugins.keys():
         if not (plugin_name in config):
-            print('no data for %s' % plugin_name)
+            logger.info('no data for %s' % plugin_name)
             continue
-        print('loading for %s' % plugin_name)
+        logging.debug('loading configuration for %s' % plugin_name)
         plugins[plugin_name].set_configuration(config[plugin_name])

@@ -1,7 +1,11 @@
 import os
+import logging
 
 from ikalog.utils.ikautils import IkaUtils
 from ikalog.utils.localization import Localization
+
+
+logger = logging.getLogger()
 
 def find_image_file(img_file=None, languages=None):
     if languages is None:
@@ -26,8 +30,7 @@ def find_image_file(img_file=None, languages=None):
 
     f = IkaUtils.get_path('masks', 'ja', img_file)
     if os.path.exists(f):
-        IkaUtils.dprint('%s: mask %s: using ja version' %
-            (self, img_file))
+        logger.info(f'mask {img_file}: using ja version')
         return f
 
     raise FileNotFoundError('Could not find image file %s (lang %s)' % (img_file, lang))

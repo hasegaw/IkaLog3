@@ -66,13 +66,16 @@
 # the use of this software, even if advised of the possibility of such damage.
 #
 
+import logging
 import os
 import pickle
 
 import cv2
 import numpy as np
+from ikalog.utils import Localization, IkaUtils
 
-from ikalog.utils import *
+logger = logging.getLogger()
+
 
 class WarpFilterModel(object):
 
@@ -136,9 +139,9 @@ class WarpFilterModel(object):
         try:
             self.loadModelFromFile(model_filename)
             num_keypoints = len(self.calibration_image_keypoints)
-            IkaUtils.dprint('%s: Loaded model data\n  %s (%d keypoints)' % (self, model_filename, num_keypoints))
+            logger.debug('Loaded model data  %s (%d keypoints)' % (model_filename, num_keypoints))
         except:
-            IkaUtils.dprint('%s: Could not load model data. Trying to rebuild...' % self)
+            logger.info('Could not load model data. Trying to rebuild...')
 
             calibration_image = cv2.imread('camera/ika_usbcam/Pause.png', 0)
             self.calibration_image_size = calibration_image.shape[:2]
@@ -147,15 +150,12 @@ class WarpFilterModel(object):
             self.calibration_image_keypoints, self.calibration_image_descriptors = \
                 self.detector.detectAndCompute( calibration_image, None)
 
-            print(self.calibration_image_keypoints)
-            print(self.calibration_image_descriptors)
-
             model_filename = IkaUtils.get_path(
                 'data',
                 'webcam_calibration.%s.model' % Localization.get_game_languages()[0]
             )
             self.saveModelToFile(model_filename)
-            IkaUtils.dprint('%s: Created model %s' % (self, model_filename))
+            logger.info('%s: Created model %s' % (self, model_filename))
 
         self.trained = True
 

@@ -18,11 +18,16 @@
 #  limitations under the License.
 #
 
+import logging
 import traceback
+
+
 from ikalog.utils import imread
 from ikalog.utils.ikautils import *
 from ikalog.utils.image_filters import *
 from ikalog.utils.localization import Localization
+
+logger = logging.getLogger()
 
 
 class IkaMatcher1(object):
@@ -56,9 +61,10 @@ class IkaMatcher1(object):
                 self.bg_method(img_bgr=img_bgr, img_gray=img_gray)
             img_bg = np.minimum(img_bg, self.mask_img)
         except:
-            IkaUtils.dprint('%s (%s): bg_method %s caused a exception.' % (
-                self, self.label, self.bg_method.__class__.__name__))
-            IkaUtils.dprint(traceback.format_exc())
+            logger.info('%s raised an exception >>>>' % (bg_method))
+            for line in traceback.format_exc().split("\n"):
+                logger.info(line)
+            logger.info('<<<<<')
 
         self.mask_img[self.mask_img < 170] = 0
         self.mask_img[self.mask_img > 0] = 255
@@ -183,8 +189,7 @@ class IkaMatcher1(object):
             img = imread(img_file2)
 
             if img is None:
-                IkaUtils.dprint(
-                    '%s is not available. Retrying with %s' % (img_file2, img_file))
+                logger.info(f'{img_file2} is not available. Retrying with {img_file}')
                 img = imread(img_file)
 
         if img is None:

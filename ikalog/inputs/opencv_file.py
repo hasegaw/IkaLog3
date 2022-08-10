@@ -16,7 +16,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-#
+
+import logging
 import os
 import queue
 import re
@@ -26,6 +27,9 @@ import threading
 import cv2
 from ikalog.utils import *
 from ikalog.inputs import VideoInput
+
+
+logger = logging.getLogger()
 
 
 class CVFile(VideoInput):
@@ -180,12 +184,10 @@ class CVFile(VideoInput):
         is_ffmpeg_enabled = (ffmpeg_line and ffmpeg_line.group(1) == 'YES')
 
         if (is_osx and not is_ffmpeg_enabled):
-            IkaUtils.dprint('%s: OpenCV misconfiguration detected.\n'
+            logger.critical('IkaUtils.dprint(OpenCV misconfiguration detected.\n'
                 '  - IkaLog may experience serious performance degradation.\n'
                 '  - IkaLog may not able to read several video formats.\n'
-                '  Please review your OpenCV Configuration.\n'
-                '  %s' % (self, ffmpeg_line.group(0))
-            )
+                '  Please review your OpenCV Configuration.')
             time.sleep(5)
 
     def __init__(self):
@@ -200,8 +202,7 @@ class CVFile(VideoInput):
 
     # backward compatibility
     def start_video_file(self, source):
-        IkaUtils.dprint(
-            '%s: start_video_file() is deprcated. Use select_source(name="filename.mp4")' % self)
+        logger.info('start_video_file() is deprecated. Use select_source(name="filename.mp4")')
         self.select_source(name=source)
 
 if __name__ == "__main__":

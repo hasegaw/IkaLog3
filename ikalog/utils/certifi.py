@@ -18,8 +18,10 @@
 #  limitations under the License.
 
 import os.path
+import logging
 
-from ikalog.utils.ikautils import *
+
+logger = logging.getLogger()
 
 class Certifi(object):
 
@@ -45,6 +47,5 @@ class Certifi(object):
         except ImportError:
             pass
 
-        IkaUtils.dprint('ikalog.utils.Certifi: Cannot find any cacert.pem')
-
+        logger.error('ikalog.utils.Certifi: Cannot find any cacert.pem')
         return None

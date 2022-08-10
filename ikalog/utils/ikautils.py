@@ -20,11 +20,13 @@
 from __future__ import print_function
 
 import copy
+import logging
 import os
 import platform
 import re
 import sys
 import time
+
 from datetime import datetime
 
 from PIL import Image
@@ -35,6 +37,9 @@ from ikalog.constants import rules, gear_abilities, lobby_types
 from ikalog.constants import hurtable_objects, oob_reasons, special_weapons, sub_weapons, weapons
 from ikalog.utils.localization import Localization
 from ikalog.utils import imread
+
+logger = logging.getLogger()
+
 
 class IkaUtils(object):
 
@@ -48,7 +53,7 @@ class IkaUtils(object):
 
     @staticmethod
     def dprint(text):
-        print(text, file=sys.stderr)
+        logger.debug(text)
 
     @staticmethod
     def get_path(*dirs):

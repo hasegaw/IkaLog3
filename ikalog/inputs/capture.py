@@ -19,14 +19,18 @@
 #
 
 import gettext
+import logging
 import time
+
 from ikalog import inputs
-from ikalog.utils import *
 from ikalog.plugin import IkaLogPlugin
 import traceback
 
+from ikalog.utils import IkaUItils
+
 t = gettext.translation('IkaUI', 'locale', fallback=True)
 _ = t.gettext
+logger = logging.getLogger()
 
 
 class Capture(IkaLogPlugin):
@@ -72,9 +76,10 @@ class Capture(IkaLogPlugin):
             try:
                 self._register_input_plugin(plugin_class)
             except Exception:
-                IkaUtils.dprint('Registration error: %s' %
-                                plugin_class.__class__.__name__)
-                IkaUtils.dprint(traceback.format_exc())
+                logger.error('Registration error: >>>')
+                for line in traceback.format_exc().split("\n"):
+                    logger.error(line)
+                logger.error('<<<<<')
 
     """
     Device activation and deactivation
@@ -101,13 +106,14 @@ class Capture(IkaLogPlugin):
             capture.set_frame_rate(10)
 
             self.capture = capture
-            IkaUtils.dprint('%s: new input activated (%s, %s)' %
-                            (self, cls, config))
+            logger.info('new input activated (%s, %s)' %
+                            (cls, config))
             time.sleep(5)
         except:
-            IkaUtils.dprint(
-                '%s: new input cannot be activated (%s, %s)' % (self, cls, config))
-            IkaUtils.dprint(traceback.format_exc())
+            logger.error('new input cannot be activated (%s, %s)' % (cls, config))
+            for line in traceback.format_exc().split("\n"):
+                logger.error(line)
+            logger.error('<<<<<')
 
             self.capture = None
             self._source_name = None
@@ -120,7 +126,7 @@ class Capture(IkaLogPlugin):
 
     def _deactivate_input_nolock(self):
         if self.capture is not None:
-            IkaUtils.dprint('%s: Deinitializing input...' % self)
+            logger.info('%s: Deinitializing input...' % self)
             self.capture = None
             time.sleep(1)
 
@@ -190,8 +196,7 @@ class Capture(IkaLogPlugin):
         new_source = config.get(new_class, {}).get('source')
 
         if self._is_activated(new_class, new_source):
-            IkaUtils.dprint('%s: Requested capture configuration is'
-                            ' already active.' % self)
+            logger.info('Requested capture configuration is already active.')
             return True
 
         self._deactivate_input()
@@ -256,8 +261,7 @@ class Capture(IkaLogPlugin):
         return self.capture.on_eof()
 
     def start_recorded_file(self, file):
-        IkaUtils.dprint(
-            '%s: initalizing pre-recorded video file %s' % (self, file))
+        logger.info(f'initalizing pre-recorded video file {file}')
         self.realtime = False
         self.from_file = True
         self.capture.init_capture(file)

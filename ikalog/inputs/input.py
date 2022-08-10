@@ -18,14 +18,17 @@
 #  limitations under the License.
 #
 
-import threading
+import logging
 import os
+import threading
 import time
 
 import cv2
 
 from ikalog.utils import IkaUtils
 from ikalog.inputs.filters import OffsetFilter
+
+logger = logging.getLogger()
 
 
 class VideoInput(object):
@@ -204,7 +207,7 @@ class VideoInput(object):
             res1080p = (img.shape[0] == 1080) and (img.shape[1] == 1920)
 
             if not (res720p or res1080p):
-                IkaUtils.dprint(
+                logger.warning(
                     'Invalid input resolution (%dx%d). Acceptable res: 1280x720 or 1920x1080' %
                     (img.shape[1], img.shape[0])
                 )
@@ -297,10 +300,10 @@ class VideoInput(object):
     ##
     # Backward compatibility.
     def start_camera(self, source):
-        IkaUtils.dprint(
-            '%s: start_camera() is deprcated. Use select_source().' % self)
-        IkaUtils.dprint('   start_camera(index=1)')
-        IkaUtils.dprint('   start_camera(name="my capture device")')
+        logging.infon(
+            'start_camera() is deprcated. Use select_source().')
+        logging.info('   start_camera(index=1)')
+        logging.info('   start_camera(name="my capture device")')
         raise Exception()
 
     ##

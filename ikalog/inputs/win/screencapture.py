@@ -18,10 +18,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import os
+
 import ctypes
-import time
+import logging
+import os
 import threading
+import time
 
 import cv2
 import numpy as np
@@ -31,7 +33,7 @@ from ikalog.inputs import VideoInput
 from ikalog.inputs.filters import WarpFilter, WarpCalibrationNotFound, WarpCalibrationUnacceptableSize
 
 _ = Localization.gettext_translation('screencapture', fallback=True).gettext
-
+logger = logging.getLogger()
 
 class ScreenCapture(VideoInput):
 
@@ -76,7 +78,8 @@ class ScreenCapture(VideoInput):
                     w, h),
                 _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
             ])
-            IkaUtils.dprint(msg)
+            logger.info(msg)
+
         else:
             return False
 
@@ -102,7 +105,7 @@ class ScreenCapture(VideoInput):
                 _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
                 _('Calibration Failed!'),
             ])
-            IkaUtils.dprint(msg)
+            logger.info(msg)
             return False
 
         except WarpCalibrationNotFound:
@@ -111,7 +114,7 @@ class ScreenCapture(VideoInput):
                 _('IkaLog expects 1280 x 720, or 1920 x 1080 as input resolution.'),
                 _('Calibration Failed!'),
             ])
-            IkaUtils.dprint(msg)
+            logger.info(msg)
             return False
 
         if not r:
@@ -119,11 +122,11 @@ class ScreenCapture(VideoInput):
                 _('No description provided. (could be a bug)'),
                 _('Calibration Failed!'),
             ])
+            logger.info(msg)
             return False
-            IkaUtils.dprint(msg)
 
         self._warp_filter.enable()
-        IkaUtils.dprint(_('Calibration succeeded!'))
+        logger.info(_('Calibration succeeded!'))
         return True
 
     def capture_screen(self):
@@ -133,7 +136,7 @@ class ScreenCapture(VideoInput):
             img = ImageGrab.grab(None)
         except TypeError:
             # なぜ発生することがあるのか、よくわからない
-            IkaUtils.dprint('%s: Failed to grab desktop image' % self)
+            logger.error('%s: Failed to grab desktop image' % self)
             return None
 
         return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
@@ -169,13 +172,11 @@ class ScreenCapture(VideoInput):
 
     # override
     def _select_device_by_index_func(self, source):
-        IkaUtils.dprint(
-            '%s: Does not support _select_device_by_index_func()' % self)
+        logger.info('_select_device_by_index_func() not implemented')
 
     # override
     def _select_device_by_name_func(self, source):
-        IkaUtils.dprint(
-            '%s: Does not support _select_device_by_name_func()' % self)
+        logger.info('_select_device_by_name_func() not implemented')
 
 if __name__ == "__main__":
     obj = ScreenCapture()

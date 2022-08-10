@@ -18,8 +18,9 @@
 #  limitations under the License.
 #
 
-import time
+import logging
 import threading
+import time
 
 import cv2
 
@@ -27,6 +28,7 @@ from ikalog.utils import *
 from ikalog.inputs.win.videoinput_wrapper import VideoInputWrapper
 from ikalog.inputs import VideoInput
 
+logger = logging.getLogger()
 
 class DirectShow(VideoInput):
 
@@ -105,24 +107,21 @@ class DirectShow(VideoInput):
             # end of for loop
 
             if self._device_id is None:
-                IkaUtils.dprint(
-                    '%s: Failed to init the capture device %d' %
-                    (self, device_id)
-                )
+                logger.error('Failed to init the capture device %d' % device_id)
         finally:
             self.lock.release()
 
     # override
     def _select_device_by_name_func(self, source):
-        IkaUtils.dprint('%s: Select device by name "%s"' % (self, source))
+        logger.info('Select device by name "%s"' % source)
 
         try:
             index = self.enumerate_sources().index(source)
         except ValueError:
-            IkaUtils.dprint('%s: Input "%s" not found' % (self, source))
+            logger.error('Input "%s" not found' % source)
             return False
 
-        IkaUtils.dprint('%s: "%s" -> %d' % (self, source, index))
+        logger.info(f'"{source}" -> {index}')
         self._select_device_by_index_func(index)
 
     def __init__(self):
@@ -137,7 +136,7 @@ if __name__ == "__main__":
 
     list = obj.enumerate_sources()
     for n in range(len(list)):
-        IkaUtils.dprint("%d: %s" % (n, list[n]))
+        print("%d: %s" % (n, list[n]))
 
     dev = input("Please input number (or name) of capture device: ")
 

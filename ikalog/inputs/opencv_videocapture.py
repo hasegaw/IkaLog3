@@ -73,12 +73,14 @@ class CVCapture(VideoInput):
             self.video_capture = cv2.VideoCapture(int(source))
 
             if not self.video_capture.isOpened():
-                IkaUtils.dprint(
-                    '%s: cv2.VideoCapture() failed to open the device' % self)
+                logger.error('cv2.VideoCapture() failed to open the device')
                 self.video_capture = None
 
         except:
-            self.dprint(traceback.format_exc())
+            logger.error('Exception occured while device selection >>>')
+            for line in traceback.format_exc().split("\n"):
+                logger.info(line)
+            logger.info('<<<<<')
             self.video_capture = None
 
         finally:
@@ -89,15 +91,15 @@ class CVCapture(VideoInput):
 
     # override
     def _select_device_by_name_func(self, source):
-        IkaUtils.dprint('%s: Select device by name "%s"' % (self, source))
+        logger.info(f'Select device by name "{source}"')
 
         try:
             index = self.enumerate_sources().index(source)
         except ValueError:
-            IkaUtils.dprint('%s: Input "%s" not found' % (self, source))
+            logger.error(f'Input {source} not found')
             return False
 
-        IkaUtils.dprint('%s: "%s" -> %d' % (self, source, index))
+        logger.info('"%s" -> %d' % (source, index))
         self._select_device_by_index_func(index)
 
     # override

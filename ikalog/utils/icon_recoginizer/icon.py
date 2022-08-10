@@ -19,12 +19,15 @@
 #  limitations under the License.
 #
 
+import logging
 import os
 import pickle
 
 import cv2
 import numpy as np
 
+
+logger = logging.getLogger()
 
 class IconRecoginizer(object):
 
@@ -182,8 +185,7 @@ class IconRecoginizer(object):
         responses = responses.reshape((responses.size, 1))
 
         self.model.train(samples, cv2.ml.ROW_SAMPLE, responses)
-        print('%s: KNN Trained (%d samples)' %
-              (self, len(responses)))
+        logger.info('KNN Trained (%d samples)' % len(responses))
         self.trained = True
 
     def learn_image_group(self, name=None, dir=None):

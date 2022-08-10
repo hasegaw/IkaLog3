@@ -22,16 +22,23 @@ from __future__ import print_function
 
 import copy
 import cv2
+import logging
 import pprint
 import sys
 import time
 import traceback
 
 from ikalog.utils import *
+
+
 from .scenes.v2 import initialize_scenes
+
+
+logger = logging.getLogger()
 
 # The IkaLog core engine.
 #
+
 
 
 class IkaEngine:
@@ -104,46 +111,42 @@ class IkaEngine:
     def on_game_lost_sync(self, context):
         self.session_abort()
 
-    def dprint(self, text):
-        print(text, file=sys.stderr)
-
     def call_plugin(self, plugin, event_name,
                     params=None, debug=False, context=None):
         if not context:
             context = self.context
 
         if hasattr(plugin, event_name):
-            if debug:
-                self.dprint('Call  %s' % plugin.__class__.__name__)
+            logger.debug('Call  %s' % plugin.__class__.__name__)
             try:
                 if params is None:
                     getattr(plugin, event_name)(context)
                 else:
                     getattr(plugin, event_name)(context, params)
             except:
-                self.dprint('%s.%s() raised a exception >>>>' %
+                logger.info('%s.%s() raised a exception >>>>' %
                             (plugin.__class__.__name__, event_name))
-                self.dprint(traceback.format_exc())
-                self.dprint('<<<<<')
+                for line in traceback.format_exc().split("\n"):
+                    logger.info(line)
+                logger.info('<<<<<')
 
         elif hasattr(plugin, 'on_uncaught_event'):
-            if debug:
-                self.dprint(
-                    'call plug-in hook (on_uncaught_event, %s):' % event_name)
+            logger.debug('call plug-in hook (on_uncaught_event, %s):' % event_name)
             try:
                 getattr(plugin, 'on_uncaught_event')(event_name, context)
             except:
-                self.dprint('%s.%s() raised a exception >>>>' %
+                logger.info('%s.%s() raised a exception >>>>' %
                             (plugin.__class__.__name__, event_name))
-                self.dprint(traceback.format_exc())
-                self.dprint('<<<<<')
+                for line in traceback.format_exc().split("\n"):
+                    logger.info(line)
+                logger.info('<<<<<')
 
     def call_plugins(self, event_name, params=None, debug=False, context=None):
         if not context:
             context = self.context
 
-        if debug:
-            self.dprint('call plug-in hook (%s):' % event_name)
+        logger.debug('call plug-in hook (%s):' % event_name)
+
 
         for op in self.output_plugins:
             self.call_plugin(op, event_name, params, debug, context)
@@ -175,7 +178,7 @@ class IkaEngine:
             context['engine']['frame_hd'] = frame
             context['engine']['frame'] = cv2.resize(frame, (1280, 720))
         else:
-            self.dprint('Unexpected resolution %s' % str(frame.shape))
+            logger.info('Unexpected resolution %s' % str(frame.shape))
             return None, None
 
         context['engine']['preview'] = copy.deepcopy(context['engine']['frame'])
@@ -309,9 +312,14 @@ class IkaEngine:
             scene_name = scene.__class__.__name__
             desc = traceback.format_exc()
 
-            self.dprint('%s raised a exception >>>>' % scene_name)
-            self.dprint(desc)
-            self.dprint('<<<<<')
+            logger.info('%s.%s() raised a exception >>>>' %
+                        (plugin.__class__.__name__, event_name))
+
+
+            logger.info(f'{scene_name} raised an exception >>>>' % scene_name)
+            for line in traceback.format_exc().split("\n"):
+                logger.info(line)
+            logger.info('<<<<<')
 
             self._exception_log_append(context, scene_name, desc)
 
@@ -336,7 +344,7 @@ class IkaEngine:
 
         if self.session_close_wdt is not None:
             if self.session_close_wdt < context['engine']['msec']:
-                self.dprint('Watchdog fired. Closing current session')
+                logger.info('Watchdog fired. Closing current session')
                 self.session_close()
 
         key = None
@@ -393,7 +401,7 @@ class IkaEngine:
                 # EOF. Close session if close_session_at_eof is set.
                 if self.close_session_at_eof:
                     if self.session_close_wdt is not None:
-                        self.dprint('Closing current session at EOF')
+                        logger.info('Closing current session at EOF')
                         self.session_close()
                     else:
                         self.session_abort()
@@ -440,7 +448,7 @@ class IkaEngine:
 
     def enable_plugin(self, plugin):
         if not (plugin in self.output_plugins):
-            self.dprint('%s: cannot enable plugin %s' % (self, plugin))
+            logger.error('%s: cannot enable plugin %s' % (self, plugin))
             return False
 
         self.call_plugin(plugin, 'on_enable')

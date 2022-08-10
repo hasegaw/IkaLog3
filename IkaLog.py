@@ -18,17 +18,23 @@
 #  limitations under the License.
 #
 
+
 from ikalog.utils import Localization, IkaUtils
 Localization.print_language_settings()
 
 import argparse
+import logging
 import signal
 import sys
 import time
+
 from ikalog import inputs
 from ikalog.engine import IkaEngine
 from ikalog.utils import config_loader
+from ikalog.logger import init_logger
 
+
+logger = logging.getLogger()
 
 
 def signal_handler(num, frame):
@@ -76,6 +82,7 @@ def get_pos_msec(args):
 
 
 if __name__ == "__main__":
+    init_logger()
     signal.signal(signal.SIGINT, signal_handler)
 
     args = get_args()
@@ -97,6 +104,6 @@ if __name__ == "__main__":
     read_from_file(engine, 'ikalog.conf.json')
 
     engine.close_session_at_eof = True
-    IkaUtils.dprint('IkaLog: start.')
+    logger.info('IkaLog: start.')
     engine.run()
-    IkaUtils.dprint('bye!')
+    logger.info('bye!')
