@@ -37,7 +37,7 @@ from ikalog.scenes.game.kill_combo import GameKillCombo
 from .game.dead import Spl2GameDead
 from .game.low_ink import Spl2GameLowInk
 from .game.finish import Spl2GameFinish
-# from .game.paint_tracker import V2PaintTracker
+from .game.paint_tracker import Spl3PaintTracker
 from .game.objective_tracker import ObjectiveTracker
 from .game.splatzone_tracker import SplatzoneTracker
 from .game.ranked_battle_events import Spl2GameRankedBattleEvents
@@ -69,32 +69,32 @@ from ikalog.scenes.blank import Blank
 
 def initialize_scenes(engine):
     s = [
-        Spl2GameSession(engine),
+        Spl3PaintTracker(engine),
+#        Spl2GameSession(engine),
         Spl2InGame(engine),
 
-        Spl2ResultMap(engine),
-        Spl2ResultJudge(engine),
-        Spl2ResultScoreboard(engine),
+#        Spl2ResultMap(engine),
+#        Spl2ResultJudge(engine),
+#        Spl2ResultScoreboard(engine),
 
-        GameGoSign(engine),
-        Spl2GameDead(engine),
-        Spl2GameFinish(engine),
-        Spl2GameKill(engine),
-        GameKillCombo(engine),
+#        GameGoSign(engine),
+#        Spl2GameDead(engine),
+#        Spl2GameFinish(engine),
+#        Spl2GameKill(engine),
+#        GameKillCombo(engine),
         # Spl2GameLowInk(engine),
-        Spl2GameMap(engine),
-        Spl2GameRankedBattleEvents(engine),
-        Spl2GameSpecialMeter(engine),
-        Spl2GameSpecialWeaponActivation(engine),
-        Spl2GameStart(engine),
-        Spl2GameSubWeapon(engine),
-        ObjectiveTracker(engine),
-        SplatzoneTracker(engine),
+        #Spl2GameMap(engine),
+#        Spl2GameRankedBattleEvents(engine),
+#        Spl2GameSpecialMeter(engine),
+        #Spl2GameSpecialWeaponActivation(engine),
+        #Spl2GameStart(engine),
+#        Spl2GameSubWeapon(engine),
+#        ObjectiveTracker(engine),
+#        SplatzoneTracker(engine),
         GameTimerIcon(engine),
-        Spl2GameInklings(engine),
+#        Spl2GameInklings(engine),
 
-        # V2PaintTracker(engine),
-        Lobby(engine),
+#        Lobby(engine),
 
         # Spl2SalmonRunSession(engine),
         # Spl2SalmonRunGameStart(engine),

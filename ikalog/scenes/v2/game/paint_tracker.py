@@ -26,47 +26,38 @@ import cv2
 
 from ikalog.scenes.scene import Scene
 from ikalog.utils import *
-from ikalog.utils.character_recoginizer import *
+from ikalog.utils.character_recoginizer.number2 import Number2Classifier
+from ikalog.utils.image_filters import MM_WHITE
 
-import chainer
-import chainer.functions as F
-import chainer.links as L
-from chainer import training
-from chainer.training import extensions
-from chainer.datasets import tuple_dataset
-
-# Network definition
+number2 = Number2Classifier()
 
 
-class MLP(chainer.Chain):
-
-    def __init__(self, n_units, n_out):
-        super(MLP, self).__init__(
-            # the size of the inputs to each layer will be inferred
-            l1=L.Linear(None, n_units),  # n_in -> n_units
-            l2=L.Linear(None, n_units),  # n_units -> n_units
-            l3=L.Linear(None, n_out),  # n_units -> n_out
-        )
-
-    def __call__(self, x):
-        h1 = F.relu(self.l1(x))
-        h2 = F.relu(self.l2(h1))
-        return self.l3(h2)
-
-# Scene
-
-
-class V2PaintTracker(Scene):
+class Spl3PaintTracker(Scene):
 
     def reset(self):
-        super(V2PaintTracker, self).reset()
+        super(Spl3PaintTracker, self).reset()
 
     def extract_paint_score(self, context):
         """
         crop digits from input.
         """
+        preview = context['engine']['preview']
 
-        img = context['engine']['frame']
+        img_counter = context['engine']['frame_hd'][52: 52 + 67, 1496: 1496+167]
+        img_counter_gray = MM_WHITE()(img_counter)
+        img_counter_gray_bgr = cv2.cvtColor(img_counter_gray, cv2.COLOR_GRAY2BGR)
+        cv2.imshow("paint counter", img_counter_gray_bgr)
+
+#        number2.training_mode =  True
+        s = number2.match(img_counter_gray_bgr, num_digits=(4, 5), char_height=(50, 60))
+        print(f"paint score {s}")
+
+        if s:
+            cv2.putText(preview, "%s" % s, (1000, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255) , 2)
+
+        return []
+
+
         x0 = 1022
         w = 24
         stride = 22
@@ -115,14 +106,17 @@ class V2PaintTracker(Scene):
             cv2.moveWindow(str(label), 10, label * 70)
 
     def match_no_cache(self, context):
-        if (not self.is_another_scene_matched(context, 'Spl2GameSession')):
-            return False
-        frame = context['engine']['frame']
-        if frame is None:
-            return False
+        #if (not self.is_another_scene_matched(context, 'Spl2GameSession')):
+        #    return False
+        #frame = context['engine']['frame']
+        #if frame is None:
+        #    return False
 
         img_digits = self.extract_paint_score(context)
-        val, labels = self.recognize_paint_score(img_digits)
+
+
+        return
+        #val, labels = self.recognize_paint_score(img_digits)
 
         if val is not None:
             # Set latest paint_score to the context.
@@ -142,11 +136,8 @@ class V2PaintTracker(Scene):
         pass
 
     def _init_scene(self, debug=False):
-        num_unit = 1000
-        self.model = L.Classifier(MLP(num_unit, 11))
-        chainer.serializers.load_npz(
-            '/Users/t-hasegawa/work/spl2/numbers_model', self.model)
+        pass
 
 
 if __name__ == "__main__":
-    V2PaintTracker.main_func()
+    Spl3PaintTracker.main_func()

@@ -20,13 +20,14 @@
 
 import cv2
 import os
+import os.path
 import numpy as np
 
-from ikalog.utils.character_recoginizer import *
+from ikalog.utils.character_recoginizer.character_rev2 import CharacterRecoginizer_rev2
 from ikalog.utils import *
 
 
-class Number2Classifier(CharacterRecoginizer):
+class Number2Classifier(CharacterRecoginizer_rev2):
 
     def __new__(cls, *args, **kwargs):
 
@@ -43,15 +44,28 @@ class Number2Classifier(CharacterRecoginizer):
 
         super(Number2Classifier, self).__init__()
 
-        model_name = 'data/number_v2.model'
+        model_name = 'data/number_v2.1.model'
         if os.path.isfile(model_name):
             self.load_model_from_file(model_name)
             self.train()
             return
 
         IkaUtils.dprint('Building number recoginization model.')
+        dataset_path = 'numbers_v2/'
+        data = []
+
+        for response in range(10):
+            class_path = os.path.join(dataset_path, str(response))
+            assert os.path.isdir(class_path)
+
+            filenames = os.listdir(class_path)
+            png_filenames = list(filter(lambda filename: filename.lower().endswith('.png'), filenames))
+            print(class_path, png_filenames)
+            for png_filename in png_filenames:
+                data.append({'file': os.path.join(class_path, png_filename), 'response': response})
+
         # try to rebuild model
-        data = [
+        data_old = [
             {'file': 'numbers_v2/num0_1.png', 'response': 0, },
             {'file': 'numbers_v2/num0_2.png', 'response': 0, },
             {'file': 'numbers_v2/num0_2.png', 'response': 0, },

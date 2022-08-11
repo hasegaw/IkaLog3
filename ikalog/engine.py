@@ -117,7 +117,7 @@ class IkaEngine:
             context = self.context
 
         if hasattr(plugin, event_name):
-            logger.debug('Call  %s' % plugin.__class__.__name__)
+            #logger.debug('Call  %s' % plugin.__class__.__name__)
             try:
                 if params is None:
                     getattr(plugin, event_name)(context)
@@ -131,7 +131,7 @@ class IkaEngine:
                 logger.info('<<<<<')
 
         elif hasattr(plugin, 'on_uncaught_event'):
-            logger.debug('call plug-in hook (on_uncaught_event, %s):' % event_name)
+            #logger.debug('call plug-in hook (on_uncaught_event, %s):' % event_name)
             try:
                 getattr(plugin, 'on_uncaught_event')(event_name, context)
             except:
@@ -145,7 +145,7 @@ class IkaEngine:
         if not context:
             context = self.context
 
-        logger.debug('call plug-in hook (%s):' % event_name)
+        #logger.debug('call plug-in hook (%s):' % event_name)
 
 
         for op in self.output_plugins:
@@ -312,11 +312,7 @@ class IkaEngine:
             scene_name = scene.__class__.__name__
             desc = traceback.format_exc()
 
-            logger.info('%s.%s() raised a exception >>>>' %
-                        (plugin.__class__.__name__, event_name))
-
-
-            logger.info(f'{scene_name} raised an exception >>>>' % scene_name)
+            logger.info(f'{scene_name} raised an exception >>>>')
             for line in traceback.format_exc().split("\n"):
                 logger.info(line)
             logger.info('<<<<<')

@@ -17,6 +17,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import logging
 import sys
 import time
 import traceback
@@ -32,6 +33,10 @@ from ikalog.utils.ikamatcher2.matcher import MultiClassIkaMatcher2 as MultiClass
 
 from ikalog.ml.classifier import ImageClassifier
 from ikalog.ml.text_reader import TextReader
+
+
+logger = logging.getLogger()
+
 
 
 class Spl2GameStart(StatefulScene):
@@ -171,7 +176,7 @@ class Spl2GameStart(StatefulScene):
                 context['game']['gachi_power'] = int(power)
 
         if not context['game']['start_time']:
-            print("SETTING FALLBACK START TIME")
+            logger.debug("SETTING FALLBACK START TIME")
             # start_time should be initialized in GameGoSign.
             # This is a fallback in case GameGoSign was skipped.
             context['game']['start_time'] = IkaUtils.getTime(context)
@@ -214,12 +219,12 @@ class Spl2GameStart(StatefulScene):
         for v in self.stage_votes:
             if v[1] is None:
                 continue
-            print('stage', v[0], v[1])
+            logger.debug('stage', v[0], v[1])
 
         for v in self.rule_votes:
             if v[1] is None:
                 continue
-            print('rule', v[0], v[1])
+            logger.debug('rule', v[0], v[1])
 
     def _init_scene(self, debug=False):
         self.election_period = 5 * 1000  # msec
@@ -259,10 +264,10 @@ class Spl2GameStart(StatefulScene):
                 )
                 setattr(rule, 'id_', rule_id)
                 self._rule_masks.add_mask(rule)
-                print("Loaded %s" % rule_id)
+                logger.info("Loaded %s" % rule_id)
 
             except FileNotFoundError:
-                print("Failed to load %s" % rule_id)
+                logger.error("Failed to load %s" % rule_id)
 
         for stage_id in stages_v2.keys():
             try:
@@ -279,10 +284,10 @@ class Spl2GameStart(StatefulScene):
                 )
                 setattr(stage, 'id_', stage_id)
                 self._stage_masks.add_mask(stage)
-                print("Loaded %s" % stage_id)
+                logger.info("Loaded %s" % stage_id)
 
             except FileNotFoundError:
-                print("Failed to load %s" % stage_id)
+                logger.error("Failed to load %s" % stage_id)
 
         self._tr = TextReader()
 

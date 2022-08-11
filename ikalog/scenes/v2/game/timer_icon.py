@@ -28,6 +28,9 @@ from ikalog.scenes.stateful_scene import StatefulScene
 from ikalog.ml.text_reader import TextReader
 from ikalog.utils import *
 
+from ikalog.utils.character_recoginizer.number2 import Number2Classifier
+
+number2 = Number2Classifier()
 
 """
 Y position
@@ -125,61 +128,73 @@ class GameTimerIcon(StatefulScene):
         self._last_event_msec = - 100 * 1000
 
 
+    def _set_team_colors(self, context):
+        """
+        not reviewed for spl3
+        """
+        return
+        # Set the team colors on first match
+        # TODO Alecat - decide on this method vs team_color detection in start.py
+        frame = context['engine']['frame']
+        if 'game' in context and 'team_color_rgb' not in context['game']:
+            context['game']['team_color_rgb'] = [
+                (int(frame[68][565][2]), int(frame[68][565][1]), int(frame[68][565][0])),
+                    (int(frame[68][730][2]), int(frame[68][730][1]), int(frame[68][730][0])),
+            ]
+
+
     def _state_default(self, context):
-        session = self.find_scene_object('Spl2GameSession')
-        if session is not None:
-            is_start = session._state.__name__ in ('_state_game_start', 'Spl2GameSession')
-            if not (is_start):
-                return False
+#        session = self.find_scene_object('Spl2GameSession')
+#        if session is not None:
+#            is_start = session._state.__name__ in ('_state_game_start', 'Spl2GameSession')
+#            if not (is_start):
+#                return False
+
         matched = self.check_match(context)
+        print(f"Timer: {matched}")
+
 
         if matched:
             self._switch_state(self._state_tracking)
-            # Set the team colors on first match
-            # TODO Alecat - decide on this method vs team_color detection in start.py
-            frame = context['engine']['frame']
-            if 'game' in context and 'team_color_rgb' not in context['game']:
-                context['game']['team_color_rgb'] = [
-                    (int(frame[68][565][2]), int(frame[68][565][1]), int(frame[68][565][0])),
-                    (int(frame[68][730][2]), int(frame[68][730][1]), int(frame[68][730][0])),
-                ]
+
+        self._set_team_colors(context)
+
+
 
     def _state_tracking(self, context):
-        frame = context['engine']['frame']
-
-        session = self.find_scene_object('Spl2GameSession')
-        if session is not None:
-            has_started = session._state.__name__ in ('_state_game_start', 'Spl2GameSession')
-            if not has_started:
-                return False
+#        session = self.find_scene_object('Spl2GameSession')
+#        if session is not None:
+#            has_started = session._state.__name__ in ('_state_game_start', 'Spl2GameSession')
+#            if not has_started:
+#                return False
 
         matched = self.check_match(context)
+        print(f"Timer: {matched}")
         escaped = not self.matched_in(context, 1000)
 
         if escaped:
             self._switch_state(self._state_default)
-        if matched:
-            if self._mask_overtime.match(frame):
-                self._overtime = True
+#        if matched:
+#            if self._mask_overtime.match(frame):
+#                self._overtime = True
         
         return matched
 
+
     def check_match(self, context):
-        frame = context['engine']['frame']
+        img_timer = context['engine']['frame_hd'][48: 48+ 53, 900: 900+120]
 
-        for mask in self._masks:
-            matched = mask.match(frame)
+        cv2.imshow("timer", img_timer)
+        s = number2.match(img_timer)
 
-            if not matched:
+        m =  re.match("(\d+)p(\d+)", s)
+        if m:
+            minutes, seconds = int(m.group(1)), int(m.group(2))
+            if (minutes > 5) or (seconds > 59):
                 return False
 
-        # if not self._timer_reader.match(frame):
-        #     return False
-        
-
-        # print("TIMER VS GAME", 300 - self._timer_reader.get_time(), context['engine'].get('msec'), context['game'].get('start_offset_msec'), context['engine'].get('msec') - context['game'].get('start_offset_msec'))
-
         return True
+
 
     def _analyze(self, context):
         pass
@@ -237,7 +252,7 @@ class GameTimerIcon(StatefulScene):
                 label='timer_overtime',
                 debug=debug,
             )
-        # self._timer_reader = TimerReader(debug=debug)
+        self._timer_reader = TimerReader(debug=debug)
 
 
 
