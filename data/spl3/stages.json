@@ -1,0 +1,222 @@
+[
+    {
+        "key": "yunohana",
+        "aliases": [
+            "gorge",
+            "scorch_gorge"
+        ],
+        "name": {
+            "de_DE": "Sengkluft",
+            "en_GB": "Scorch Gorge",
+            "en_US": "Scorch Gorge",
+            "es_ES": "Desfiladero Fumarola",
+            "es_MX": "Desfiladero Fumarola",
+            "fr_CA": "Canyon aux colonnes",
+            "fr_FR": "Canyon aux colonnes",
+            "it_IT": "Grank Canyon",
+            "ja_JP": "ユノハナ大渓谷",
+            "ko_KR": "석순 대협곡",
+            "nl_NL": "Roggentrog",
+            "ru_RU": "Опаленное ущелье",
+            "zh_CN": "温泉花大峡谷",
+            "zh_TW": "溫泉花大峽谷"
+        },
+        "short_name": {
+            "de_DE": "Sengkluft",
+            "en_GB": "Gorge",
+            "en_US": "Gorge",
+            "es_ES": "Desfiladero Fumarola",
+            "es_MX": "Desfiladero Fumarola",
+            "fr_CA": "Canyon aux colonnes",
+            "fr_FR": "Canyon aux colonnes",
+            "it_IT": "Grank Canyon",
+            "ja_JP": "ユノハナ",
+            "ko_KR": "석순 대협곡",
+            "nl_NL": "Roggentrog",
+            "ru_RU": "Опаленное ущелье",
+            "zh_CN": "温泉花大峡谷",
+            "zh_TW": "溫泉花大峽谷"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "gonzui",
+        "aliases": [
+            "alley",
+            "eeltail_alley"
+        ],
+        "name": {
+            "de_DE": "Streifenaal-Straße",
+            "en_GB": "Eeltail Alley",
+            "en_US": "Eeltail Alley",
+            "es_ES": "Callejones Crustáceo",
+            "es_MX": "Callejones Crustáceo",
+            "fr_CA": "Banlieue Balibot",
+            "fr_FR": "Banlieue Balibot",
+            "it_IT": "Sobborgo Siluriano",
+            "ja_JP": "ゴンズイ地区",
+            "ko_KR": "메기 지구",
+            "nl_NL": "Forelviaduct",
+            "ru_RU": "Угрево-Скатово",
+            "zh_CN": "鳗鲶区",
+            "zh_TW": "鰻鯰區"
+        },
+        "short_name": {
+            "de_DE": "Streifenaal-Straße",
+            "en_GB": "Alley",
+            "en_US": "Alley",
+            "es_ES": "Callejones Crustáceo",
+            "es_MX": "Callejones Crustáceo",
+            "fr_CA": "Banlieue Balibot",
+            "fr_FR": "Banlieue Balibot",
+            "it_IT": "Sobborgo Siluriano",
+            "ja_JP": "ゴンズイ",
+            "ko_KR": "메기 지구",
+            "nl_NL": "Forelviaduct",
+            "ru_RU": "Угрево-Скатово",
+            "zh_CN": "鳗鲶区",
+            "zh_TW": "鰻鯰區"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "kinmedai",
+        "aliases": [
+            "museum",
+            "museum_dalfonsino"
+        ],
+        "name": {
+            "de_DE": "Pinakoithek",
+            "en_GB": "Museum d'Alfonsino",
+            "en_US": "Museum d'Alfonsino",
+            "es_ES": "Museo del Pargo",
+            "es_MX": "Museo del Pargo",
+            "fr_CA": "Galeries Guppy",
+            "fr_FR": "Galeries Guppy",
+            "it_IT": "Museo di Cefalò",
+            "ja_JP": "キンメダイ美術館",
+            "ko_KR": "도미 미술관",
+            "nl_NL": "Galerie Le Guppy",
+            "ru_RU": "Галерея «Де Берикс»",
+            "zh_CN": "金眼鲷美术馆",
+            "zh_TW": "金眼鯛美術館"
+        },
+        "short_name": {
+            "de_DE": "Pinakoithek",
+            "en_GB": "Museum",
+            "en_US": "Museum",
+            "es_ES": "Museo del Pargo",
+            "es_MX": "Museo del Pargo",
+            "fr_CA": "Galeries Guppy",
+            "fr_FR": "Galeries Guppy",
+            "it_IT": "Museo di Cefalò",
+            "ja_JP": "キンメダイ",
+            "ko_KR": "도미 미술관",
+            "nl_NL": "Galerie Le Guppy",
+            "ru_RU": "Галерея «Де Берикс»",
+            "zh_CN": "金眼鲷美术馆",
+            "zh_TW": "金眼鯛美術館"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "mategai",
+        "aliases": [
+            "spillway",
+            "undertow_spillway"
+        ],
+        "name": {
+            "de_DE": "Schwertmuschel-Reservoir",
+            "en_GB": "Undertow Spillway",
+            "en_US": "Undertow Spillway",
+            "es_ES": "Cisterna Navajuela",
+            "es_MX": "Cisterna Navajuela",
+            "fr_CA": "Réservoir Rigadelle",
+            "fr_FR": "Réservoir Rigadelle",
+            "it_IT": "Cisterna Cernia",
+            "ja_JP": "マテガイ放水路",
+            "ko_KR": "맛조개 방수로",
+            "nl_NL": "Baarsreservoir",
+            "ru_RU": "Undertow Spillway",
+            "zh_CN": "Undertow Spillway",
+            "zh_TW": "Undertow Spillway"
+        },
+        "short_name": {
+            "de_DE": "Schwertmuschel-Reservoir",
+            "en_GB": "Spillway",
+            "en_US": "Spillway",
+            "es_ES": "Cisterna Navajuela",
+            "es_MX": "Cisterna Navajuela",
+            "fr_CA": "Réservoir Rigadelle",
+            "fr_FR": "Réservoir Rigadelle",
+            "it_IT": "Cisterna Cernia",
+            "ja_JP": "マテガイ",
+            "ko_KR": "맛조개 방수로",
+            "nl_NL": "Baarsreservoir",
+            "ru_RU": "Spillway",
+            "zh_CN": "Spillway",
+            "zh_TW": "Spillway"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "namero",
+        "aliases": [
+            "metalworks",
+            "mincemeat_metalworks"
+        ],
+        "name": {
+            "de_DE": "Aalstahl-Metallwerk",
+            "en_GB": "Mincemeat Metalworks",
+            "en_US": "Mincemeat Metalworks",
+            "es_ES": "Desguace Mero",
+            "es_MX": "Desguace Mero",
+            "fr_CA": "Casse Rascasse",
+            "fr_FR": "Casse Rascasse",
+            "it_IT": "Discarica Tritatutto",
+            "ja_JP": "ナメロウ金属",
+            "ko_KR": "Mincemeat Metalworks",
+            "nl_NL": "Zilversmelt-hoogovens",
+            "ru_RU": "Mincemeat Metalworks",
+            "zh_CN": "Mincemeat Metalworks",
+            "zh_TW": "Mincemeat Metalworks"
+        },
+        "short_name": {
+            "de_DE": "Aalstahl-Metallwerk",
+            "en_GB": "Metalworks",
+            "en_US": "Metalworks",
+            "es_ES": "Desguace Mero",
+            "es_MX": "Desguace Mero",
+            "fr_CA": "Casse Rascasse",
+            "fr_FR": "Casse Rascasse",
+            "it_IT": "Discarica Tritatutto",
+            "ja_JP": "ナメロウ",
+            "ko_KR": "Metalworks",
+            "nl_NL": "Zilversmelt-hoogovens",
+            "ru_RU": "Metalworks",
+            "zh_CN": "Metalworks",
+            "zh_TW": "Metalworks"
+        },
+        "area": null,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    }
+]
