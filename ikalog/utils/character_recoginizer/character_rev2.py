@@ -200,7 +200,6 @@ class CharacterRecoginizer_rev2(object):
         Scale the character to match with trained dataset.
         """
         shape= img_sample.shape
-        logger.info(f"resize_sample: {shape}")
         # FIXME: get ndarray as dest buffer for performance reasons
 
         (in_h, in_w) = img_sample.shape[0:2]
@@ -230,7 +229,6 @@ class CharacterRecoginizer_rev2(object):
             import time
             timestr = time.time()
             cv2.imwrite(f"resize_test_{timestr}.png", img_sample_resized_padded)
-            logger.info(f"SCALED {scaled_w}, {scaled_h} out_mat_shape {out_mat_shape} ")
         return img_sample_resized_padded
 
 
