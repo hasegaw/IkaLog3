@@ -151,7 +151,7 @@ class GameTimerIcon(StatefulScene):
 #                return False
 
         matched = self.check_match(context)
-        print(f"Timer: {matched}")
+#        print(f"Timer: {matched}")
 
 
         if matched:

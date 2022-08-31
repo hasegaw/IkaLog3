@@ -44,8 +44,6 @@ websockets = []
 
 
 class IndexHandler(tornado.web.RequestHandler):
-
-    @tornado.web.asynchronous
     def get(self):
         # For testing....
         self.render("index.html")

@@ -31,7 +31,7 @@ import traceback
 from ikalog.utils import *
 
 
-from .scenes.v2 import initialize_scenes
+from .scenes.v3 import initialize_scenes
 
 
 logger = logging.getLogger()
