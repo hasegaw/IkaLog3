@@ -194,18 +194,17 @@ class CharacterRecoginizer_rev2(object):
 
         return characters
 
-
     def resize_sample(self, img_sample):
         """
         Scale the character to match with trained dataset.
         """
-        shape= img_sample.shape
+        shape = img_sample.shape
         # FIXME: get ndarray as dest buffer for performance reasons
 
         (in_h, in_w) = img_sample.shape[0:2]
         (out_h, out_w) = self.sample_height, self.sample_width
 
-        #if not self.retain_aspect_ratio:
+        # if not self.retain_aspect_ratio:
         #    return cv2.resize(img, (out_w, out_h), interpolation=cv2.INTER_NEAREST)
 
         scale_w = out_w / in_w
@@ -215,23 +214,23 @@ class CharacterRecoginizer_rev2(object):
         scaled_w = int(in_w * scale)
         scaled_h = int(in_h * scale)
         img_sample_resized = cv2.resize(
-                img_sample, (scaled_w, scaled_h),
-                interpolation=cv2.INTER_NEAREST)
+            img_sample, (scaled_w, scaled_h),
+            interpolation=cv2.INTER_NEAREST)
 
         out_mat_shape = list(img_sample.shape)
         out_mat_shape[0] = out_h
         out_mat_shape[1] = out_w
 
         img_sample_resized_padded = np.zeros(out_mat_shape, dtype=np.uint8)
-        img_sample_resized_padded[0: scaled_h, 0: scaled_w] = img_sample_resized
+        img_sample_resized_padded[0: scaled_h,
+                                  0: scaled_w] = img_sample_resized
 
         if 0:
             import time
             timestr = time.time()
-            cv2.imwrite(f"resize_test_{timestr}.png", img_sample_resized_padded)
+            cv2.imwrite(f"resize_test_{timestr}.png",
+                        img_sample_resized_padded)
         return img_sample_resized_padded
-
-
 
     def find_samples(self, img, num_digits=None, char_width=None, char_height=None):
         characters = self.extract_characters(img)
@@ -246,9 +245,13 @@ class CharacterRecoginizer_rev2(object):
                 if (img.shape[1] < char_width[0]) or (char_width[1] < img.shape[1]):
                     continue
 
-
             # Scale the character to match with KNN trained dataset.
-            img_scaled = self.resize_sample(img)    
+            # FIXME:
+            try:
+                img_scaled = self.resize_sample(img)
+            except:
+                return []
+
             samples.append(img_scaled)
 
         if num_digits is not None:
