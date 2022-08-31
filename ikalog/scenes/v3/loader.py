@@ -21,6 +21,8 @@
 from .game.paint_tracker import Spl3PaintTracker
 from .game.kill import Spl3GameKill
 from .game.dead import Spl3GameDead
+from .game.timer import Spl3GameTimer
+from .game.weapons import Spl3GameWeapons
 
 from .lobby import Spl3Lobby
 
@@ -33,6 +35,8 @@ def initialize_scenes(engine):
         Spl3Lobby(engine),
         Spl3GameKill(engine),
         Spl3GameDead(engine),
+        Spl3GameTimer(engine),
+        Spl3GameWeapons(engine),
 
         Blank(engine),
     ]
