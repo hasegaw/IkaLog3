@@ -42,6 +42,8 @@ class Spl3GameKill(Scene):
         self._msec_last_decrease = 0
 
     def find_kill_messages(self, context):
+        img_preview720p = context['engine']['preview']
+        x = 480
         _y = 665
         killed_y = [_y, _y - 45, _y - 90, _y - 135]  # たぶん...。
 
@@ -49,8 +51,16 @@ class Spl3GameKill(Scene):
         for n in range(len(killed_y)):
             y = killed_y[n]
 
+            cv2.rectangle(img_preview720p,
+                          pt1=(x, y),
+                          pt2=(x + 49, y + 25),
+                          color=(0, 0, 255),
+                          thickness=2,
+                          lineType=cv2.LINE_4,
+                          shift=0)
+
             # Detect kill
-            img_killed = context['engine']['frame'][y: y + 25, 499:499 + 49]
+            img_killed = context['engine']['frame'][y: y + 25, x:x + 49]
             matched = self.classifier_killed.predict1(img_killed) >= 0
 
             if matched:
