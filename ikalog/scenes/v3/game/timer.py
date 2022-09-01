@@ -18,6 +18,7 @@
 #  limitations under the License.
 #
 
+from dataclasses import dataclass
 import logging
 import re
 import sys
@@ -34,6 +35,7 @@ from ikalog.utils.character_recoginizer.number2 import Number2Classifier
 logger = logging.getLogger()
 number2 = Number2Classifier()
 
+
 """
 Y position
 
@@ -49,6 +51,54 @@ y0 = 16
 y1 = 16 + 22
 y2 = 16 + 48
 y3 = 16 + 72
+
+
+@dataclass
+class CustomTimeCoordinate:
+    id: str
+    left: int
+    top: int
+    width: int
+    height: int
+
+    def crop(self, frame):
+        return frame[self.top: self.top + self.height, self.left: self.left + self.width]
+
+    def left720p(self):
+        return int(self.left * 1280 / 1920) if self.left != 0 else 0
+
+    def width720p(self):
+        return int(self.width * 1280 / 1920) if self.width != 0 else 0
+
+    def top720p(self):
+        return int(self.top * 720 / 1280) if self.top != 0 else 0
+
+    def height720p(self):
+        return int(self.height * 720 / 1280) if self.height != 0 else 0
+
+    def to_720p(self):
+        return CustomTimeCoordinate(
+            id=self.id,
+            left=self.left720p(),
+            width=self.width720p(),
+            top=self.top720p(),
+            height=self.height720p(),
+        )
+
+    def drawRect(self, img_preview720p, color=(0, 0, 255)):
+        cv2.rectangle(img_preview720p,
+                      pt1=(self.left, self.top),
+                      pt2=(self.left + self.width, self.top + self.height),
+                      color=(0, 0, 255),
+                      thickness=2,
+                      lineType=cv2.LINE_4,
+                      shift=0)
+
+
+# Coordinates of time possible
+TimeCoordinate = CustomTimeCoordinate('default', 900, 48, 120, 53)          # in 1080p
+TriColorTimeCoordinate = CustomTimeCoordinate('tricolor', 328, 43, 120, 53)         # in 1080p - hasegaw
+#TriColorTimeCoordinate = CustomTimeCoordinate('tricolor', 328, 30, 120, 53)         # in 1080p - clover's option
 
 
 class TimerReader(object):
@@ -123,9 +173,10 @@ class TimerReader(object):
 
 
 class Spl3GameTimer(StatefulScene):
-
     def reset(self):
         super(Spl3GameTimer, self).reset()
+
+        self._coordinate = None
 
         self._last_event_msec = - 100 * 1000
 
@@ -153,25 +204,49 @@ class Spl3GameTimer(StatefulScene):
             ]
 
     def preview(self, context, s):
+        coordinate = self._coordinate or TimeCoordinate
+
         preview = context['engine']['preview']
-        cv2.putText(preview, f"t: {s}", (600, 100),
+        cv2.putText(preview, f"t: {s}", (coordinate.left720p(), 100),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
-    def _state_default(self, context):
-        matched = self.check_match(context)
-        self.preview(context, matched)
+    def match_any_timer(self, context, preview=True):
+        """
+        Detect any time string on Splatoon 3 match, and returns the timestr and TimeCoordinate
+        """
+        img_preview720p = context['engine']['preview']
 
-        if matched and self._pending_timer_value == matched:
-            self._call_plugins("on_game_timer_detected", {})
+        for coordinate in (TimeCoordinate, TriColorTimeCoordinate):
+            if preview:
+                coordinate.to_720p().drawRect(img_preview720p)
+            timestr = self.check_match(context, coordinate)
+            if timestr:
+                return timestr, coordinate
+        return None, None
+
+    def _state_default(self, context):
+        """
+        Default State
+        - No in-game timer is detected yet
+        - look for both of typical battle (4v4) or tri-color (2:4:2)
+        """
+
+        timestr, coordinate = self.match_any_timer(context)
+        self.preview(context, timestr)
+
+        if timestr and self._pending_timer_value == timestr:
+            self._call_plugins("on_game_timer_detected", {
+                               "timer_type": coordinate.id})
+            self._coordinate = coordinate
             self._switch_state(self._state_tracking)
             self._set_team_colors(context)
 
-        if matched:
+        if timestr:
             self._last_event_msec = context['engine']['msec']
-            self._pending_timer_value = matched
+            self._pending_timer_value = timestr
 
     def _state_tracking(self, context):
-        matched = self.check_match(context)
+        matched = self.check_match(context, self._coordinate)
         self.preview(context, matched)
 
         if matched:
@@ -201,14 +276,14 @@ class Spl3GameTimer(StatefulScene):
 
         return matched
 
-    def check_match(self, context):
+    def check_match(self, context, coordinate):
         # FIXME: return "overtime" if overtime is detected.
         # FIXME: detect time value in yellow, less than 1 minutes - not working now.
         #        Current classifier only works with white number
 
-        img_timer = context['engine']['frame_hd'][48: 48 + 53, 900: 900+120]
+        img_timer = coordinate.crop(context['engine']['frame_hd'])
 
-        cv2.imshow("timer", img_timer)
+        cv2.imshow("timer: %s" % coordinate.id, img_timer)
         s = number2.match(img_timer)
 
         m = re.match("^(\d).(\d{2,2})$", s)
