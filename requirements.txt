@@ -1,0 +1,8 @@
+opencv-python
+pillow
+umsgpack
+urllib3
+blend_modes
+requests
+requests_oauthlib
+tornado==4.2
