@@ -29,18 +29,18 @@ from ikalog.utils.character_recoginizer import *
 
 
 class Spl3GameDead(StatefulScene):
-    choordinates = {
+    coordinates = {
         'ja': {'top': 238, 'left': 485, 'width': 309, 'height': 31},
-        'en': {'top': 263, 'left': 432},
+        'en': {'top': 274, 'left': 485, 'width': 309, 'height': 35},
     }
 
     def recoginize_and_vote_death_reason(self, context):
         lang_short = Localization.get_game_languages()[0][0:2]
 
         try:
-            c = self.choordinates[lang_short]
+            c = self.coordinates[lang_short]
         except KeyError:
-            c = self.choordinates['en']
+            c = self.coordinates['en']
 
         if self.preview:
             cv2.rectangle(context['engine']['preview'],
