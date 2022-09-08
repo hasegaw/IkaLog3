@@ -74,6 +74,10 @@ class DebugLog(object):
     def on_game_go_sign(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    def on_game_timer_detected(self, context, params):
+        self.write_debug_log(sys._getframe().f_code.co_name, context,
+                text="timer_type=%s" % params['timer_type'])
+
     def on_game_start(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
@@ -84,6 +88,12 @@ class DebugLog(object):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_lobby_matched(self, context, params):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_lobby_left_queue(self, context, params):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_lobby_matching_canceled(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_game_finish(self, context):
