@@ -56,9 +56,26 @@ class Spl3Lobby(StatefulScene):
         r_yellow = self._mask_yellow_hud.match(frame)
         r_matching = self._mask_matching.match(frame)
 
-        if r_matching:
+        if r_yellow and r_matching:
             self._call_plugins('on_lobby_matching', {})
             self._switch_state(self._state_matching)
+
+        elif r_yellow:
+            self._call_plugins('on_lobby_left_queue', {})
+            self._switch_state(self._state_left_queue)
+
+    def _state_left_queue(self, context):
+        frame = context['engine']['frame']
+        r_yellow = self._mask_yellow_hud.match(frame)
+
+        if (r_yellow):
+            self._last_matching_msec = context['engine']['msec']
+            return True
+
+        elif not self.matched_in(context, 3000, attr='_last_matching_msec'):
+            self.reset()
+
+        return False
 
 
     def _state_matching(self, context):
