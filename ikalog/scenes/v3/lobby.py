@@ -56,11 +56,27 @@ class Spl3Lobby(StatefulScene):
         r_yellow = self._mask_yellow_hud.match(frame)
         r_matching = self._mask_matching.match(frame)
 
-        if r_yellow and r_matching:
+        r_rule_nawabari = None
+        r_rule_area = None
+        r_rule_yagura = None
+        r_rule_hoko = None
+        r_rule_asari = None
+
+        if r_yellow:
+            r_rule_nawabari = self._mask_rule_nawabari.match(frame)
+            r_rule_area = self._mask_rule_area.match(frame)
+            #r_rule_yagura = self._mask_rule_yagura.match(frame)
+            #r_rule_hoko = self._mask_rule_hoko.match(frame)
+            #r_rule_asari = self._mask_rule_asari.match(frame)
+
+        r_rule_any = r_rule_nawabari or r_rule_area or r_rule_yagura \
+                or r_rule_hoko or r_rule_asari
+
+        if r_yellow and r_rule_any and r_matching:
             self._call_plugins('on_lobby_matching', {})
             self._switch_state(self._state_matching)
 
-        elif r_yellow:
+        elif r_yellow and r_rule_any:
             self._call_plugins('on_lobby_left_queue', {})
             self._switch_state(self._state_left_queue)
 
@@ -165,6 +181,69 @@ class Spl3Lobby(StatefulScene):
             label="lobby_matched",
             call_plugins=self._call_plugins,
             debug=debug,
+        )
+
+        self._mask_rule_nawabari = IkaMatcher(
+            553, 59, 134, 25,
+            img_file='v3_lobby_nawabari.png',
+            threshold=0.93,
+            orig_threshold=0.3,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
+            label="lobby_nawabari",
+            call_plugins=self._call_plugins,
+            debug=True,
+        )
+
+        self._mask_rule_area = IkaMatcher(
+            553, 59, 134, 25,
+            img_file='v3_lobby_area.png',
+            threshold=0.93,
+            orig_threshold=0.3,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
+            label="lobby_area",
+            call_plugins=self._call_plugins,
+            debug=True,
+        )
+
+        return
+
+        # WIP
+        self._mask_rule_yagura = IkaMatcher(
+            553, 59, 134, 25,
+            img_file='v3_lobby_yagura.png',
+            threshold=0.93,
+            orig_threshold=0.3,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
+            label="lobby_yagura",
+            call_plugins=self._call_plugins,
+            debug=True,
+        )
+
+        self._mask_rule_hoko = IkaMatcher(
+            553, 59, 134, 25,
+            img_file='v3_lobby_hoko.png',
+            threshold=0.93,
+            orig_threshold=0.3,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
+            label="lobby_hoko",
+            call_plugins=self._call_plugins,
+            debug=True,
+        )
+
+        self._mask_rule_asari = IkaMatcher(
+            553, 59, 134, 25,
+            img_file='v3_lobby_asari.png',
+            threshold=0.93,
+            orig_threshold=0.3,
+            bg_method=matcher.MM_BLACK(),
+            fg_method=matcher.MM_WHITE(),
+            label="lobby_asari",
+            call_plugins=self._call_plugins,
+            debug=True,
         )
 
 
