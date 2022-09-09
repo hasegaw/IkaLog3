@@ -96,9 +96,11 @@ class CustomTimeCoordinate:
 
 
 # Coordinates of time possible
-TimeCoordinate = CustomTimeCoordinate('default', 900, 48, 120, 53)          # in 1080p
-TriColorTimeCoordinate = CustomTimeCoordinate('tricolor', 328, 43, 120, 53)         # in 1080p - hasegaw
-#TriColorTimeCoordinate = CustomTimeCoordinate('tricolor', 328, 30, 120, 53)         # in 1080p - clover's option
+TimeCoordinate = CustomTimeCoordinate(
+    'default', 900, 48, 120, 53)          # in 1080p
+TriColorTimeCoordinate = CustomTimeCoordinate(
+    'tricolor', 328, 43, 120, 53)         # in 1080p - hasegaw
+# TriColorTimeCoordinate = CustomTimeCoordinate('tricolor', 328, 30, 120, 53)         # in 1080p - clover's option
 
 
 class TimerReader(object):
@@ -114,7 +116,7 @@ class TimerReader(object):
         img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         img_gray = img_hsv[:, :, 2]
         img_gray[img_gray < 210] = 0
-        img_gray[img_hsv[:, :, 1] > 30] = 0
+        #img_gray[img_hsv[:, :, 1] > 30] = 0
         img_gray[img_gray > 0] = 255
 
         val_str = None
@@ -180,7 +182,10 @@ class Spl3GameTimer(StatefulScene):
 
         self._last_event_msec = - 100 * 1000
 
-        self._pending_timer_value = None
+        self._pending_timer_value = None  # timer value
+        self._pending_timer_msec = None   # time the value was detected
+        self._pending_timer_count = 5     # count of detection
+
         self._last_timer_value = None
 
     def _set_team_colors(self, context):
@@ -203,7 +208,7 @@ class Spl3GameTimer(StatefulScene):
                     frame[68][730][1]), int(frame[68][730][0])),
             ]
 
-    def preview(self, context, s):
+    def preview(self, context, s, color=(0, 255, 0)):
         coordinate = self._coordinate or TimeCoordinate
 
         preview = context['engine']['preview']
@@ -224,6 +229,15 @@ class Spl3GameTimer(StatefulScene):
                 return timestr, coordinate
         return None, None
 
+    def on_lobby_matching(self, context, params={}):
+        pass  # self._switch_state(self._state_disabled)
+
+    def on_lobby_matched(self, context, params={}):
+        pass  # self._switch_state(self._state_default)
+
+    def on_lobby_left_queue(self, context, params={}):
+        pass  # self._switch_state(self._state_default)
+
     def _state_default(self, context):
         """
         Default State
@@ -234,54 +248,94 @@ class Spl3GameTimer(StatefulScene):
         timestr, coordinate = self.match_any_timer(context)
         self.preview(context, timestr)
 
-        if timestr and self._pending_timer_value == timestr:
-            self._call_plugins("on_game_timer_detected", {
-                               "timer_type": coordinate.id})
+        if timestr:
+            #self._last_event_msec = context['engine']['msec']
+            self._pending_timer_value = timestr
+            self._pending_timer_msec = context['engine']['msec']
             self._coordinate = coordinate
+            self._switch_state(self._state_pending)
+
+        return False
+
+    def _state_disabled(self, context):
+        """
+        Timer detection disabled
+        """
+        pass
+
+    def _state_pending(self, context):
+        """
+        Pending State
+        - in-game timer seems to be detected but pending
+        """
+
+        timestr = self.check_match(context, self._coordinate)
+        self.preview(context, timestr, color=(0, 0, 255))
+
+        if timestr == self._pending_timer_value:
+            self._pending_timer_count -= 1
+        else:
+            self.reset()
+            self._switch_state(self._state_default)
+
+        cond = self._pending_timer_count <= 0
+        if cond:
+            params = {
+                "timer_type": self._coordinate.id,
+                "t": self._pending_timer_msec,
+            }
+            self._call_plugins("on_game_timer_detected", params)
             self._switch_state(self._state_tracking)
             self._set_team_colors(context)
+            return True
 
-        if timestr:
-            self._last_event_msec = context['engine']['msec']
-            self._pending_timer_value = timestr
+        return False
 
     def _state_tracking(self, context):
-        matched = self.check_match(context, self._coordinate)
-        self.preview(context, matched)
+        timestr = self.check_match(context, self._coordinate)
+        self.preview(context, timestr)
 
-        if matched:
-            self._last_event_msec = context['engine']['msec']
-            cond_time_updated = self._pending_timer_value != self._last_timer_value
-            cond_time_doublecheck = self._pending_timer_value == matched
+        if timestr == self._last_timer_value:
+            return False
 
-            if cond_time_updated and cond_time_doublecheck:
-                #                logger.debug(f"New Time {matched}")
-                self._last_timer_value = matched
-                self._call_plugins("on_game_timer_update", {
-                                   "time_remaining": self._last_timer_value})
+        if timestr and timestr == self._pending_timer_value:
+            self._pending_timer_count -= 1
 
-            if not cond_time_doublecheck:
-                #                logger.debug(f"Pending  {matched}")
-                self._pending_timer_value = matched
+        if timestr and timestr != self._pending_timer_value:
+            self._pending_timer_count = 5
+            self._pending_timer_msec = context['engine']['msec']
+            self._pending_timer_value = timestr
 
-        escaped = not self.matched_in(context, 1000)
+        if timestr and self._pending_timer_count <= 0:
+            self._last_timer_value = timestr
+            # FIXME: overtime handling
+            params = {
+                "t": int(self._pending_timer_msec),
+                "time_remaining": timestr,
+            }
+            self._call_plugins("on_game_timer_update", params)
+
+        escaped = not self.matched_in(context, 10000)
         if escaped:
             self._call_plugins("on_game_timer_reset", {})
             self._switch_state(self._state_default)
             self.reset()
 
-#        if matched:
-#            if self._mask_overtime.match(frame):
-#                self._overtime = True
-
-        return matched
+        return timestr
 
     def check_match(self, context, coordinate):
+        """
+        Detect and timer from a frame
+        """
         # FIXME: return "overtime" if overtime is detected.
         # FIXME: detect time value in yellow, less than 1 minutes - not working now.
         #        Current classifier only works with white number
 
         img_timer = coordinate.crop(context['engine']['frame_hd'])
+        #img_timer_gray = cv2.cvtColor(img_timer, cv2.COLOR_BGR2GRAY)
+        # cv2.normalize(
+        #    cv2.cvtColor(img_timer_gray, cv2.COLOR_GRAY2BGR),
+        #    img_timer, 0, 255, norm_type=cv2.NORM_MINMAX)
 
         cv2.imshow("timer: %s" % coordinate.id, img_timer)
         s = number2.match(img_timer)
