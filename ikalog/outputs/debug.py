@@ -53,6 +53,10 @@ class DebugLog(object):
     def on_game_beginning(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
+    def on_game_team_colors_detected(self, context, params):
+        s = str(params)
+        self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
+
     def on_game_killed(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 

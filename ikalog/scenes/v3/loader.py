@@ -24,6 +24,7 @@ from .game.kill import Spl3GameKill
 from .game.kill_combo import Spl3GameKillCombo
 from .game.dead import Spl3GameDead
 from .game.timer import Spl3GameTimer
+from .game.team_colors import Spl3GameTeamColors
 from .game.weapons import Spl3GameWeapons
 
 from .lobby import Spl3Lobby
@@ -39,6 +40,7 @@ def initialize_scenes(engine):
         Spl3GameKill(engine),
 #        Spl3GameDead(engine),
         Spl3GameKillCombo(engine),
+        Spl3GameTeamColors(engine),
         Spl3GameTimer(engine),
         Spl3GameWeapons(engine),
 
