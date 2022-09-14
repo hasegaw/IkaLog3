@@ -38,22 +38,12 @@ class Spl3GameWeapons(StatefulScene):
         super(Spl3GameWeapons, self).reset()
 
     # event handlers
-    def on_game_timer_detected(self, context, params):
-        self._switch_state(self._state_waiting)
-
-    def on_game_timer_update(self, context, params):
-        if self._state != self._state_waiting:
+    def on_game_beginning(self, context, params):
+        if self._state != self._state_default:
             return
 
-        if (params['time_remaining'] in ('3:00', '5:00')):
-            self.detect_weapons(context)
-            self._switch_state(self._state_wait_for_timeout)
-            return
-
-        else:
-            logger.info("Bad time value - skipping weapon detection")
-            self._switch_state(self._state_wait_for_timeout)
-            return
+        self.detect_weapons(context)
+        self._switch_state(self._state_wait_for_timeout)
 
     def on_game_timer_reset(self, context, params):
         self.reset()
@@ -64,12 +54,6 @@ class Spl3GameWeapons(StatefulScene):
     def _state_default(self, context):
         """
         State: Waiting for a match to detect.
-        """
-        return False
-
-    def _state_waiting(self, context):
-        """
-        Timer Detected, waiting for next timer update
         """
         return False
 
