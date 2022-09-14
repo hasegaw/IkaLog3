@@ -50,6 +50,9 @@ class DebugLog(object):
 
     # In-game typical events
 
+    def on_game_beginning(self, context, params):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
     def on_game_killed(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
