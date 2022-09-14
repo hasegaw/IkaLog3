@@ -65,9 +65,9 @@ class Spl3Lobby(StatefulScene):
         if r_yellow:
             r_rule_nawabari = self._mask_rule_nawabari.match(frame)
             r_rule_area = self._mask_rule_area.match(frame)
-            #r_rule_yagura = self._mask_rule_yagura.match(frame)
-            #r_rule_hoko = self._mask_rule_hoko.match(frame)
-            #r_rule_asari = self._mask_rule_asari.match(frame)
+            r_rule_yagura = self._mask_rule_yagura.match(frame)
+            r_rule_hoko = self._mask_rule_hoko.match(frame)
+            r_rule_asari = self._mask_rule_asari.match(frame)
 
         r_rule_any = r_rule_nawabari or r_rule_area or r_rule_yagura \
                 or r_rule_hoko or r_rule_asari
@@ -207,9 +207,6 @@ class Spl3Lobby(StatefulScene):
             debug=True,
         )
 
-        return
-
-        # WIP
         self._mask_rule_yagura = IkaMatcher(
             553, 59, 134, 25,
             img_file='v3_lobby_yagura.png',
