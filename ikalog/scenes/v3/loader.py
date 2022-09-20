@@ -19,6 +19,7 @@
 #
 
 from .game.beginning import Spl3GameBeginning
+from .game.finish import Spl3GameFinish
 from .game.paint_tracker import Spl3PaintTracker
 from .game.kill import Spl3GameKill
 from .game.kill_combo import Spl3GameKillCombo
@@ -37,6 +38,7 @@ def initialize_scenes(engine):
         Spl3PaintTracker(engine),
         Spl3Lobby(engine),
         Spl3GameBeginning(engine),
+        Spl3GameFinish(engine),
         Spl3GameKill(engine),
 #        Spl3GameDead(engine),
         Spl3GameKillCombo(engine),

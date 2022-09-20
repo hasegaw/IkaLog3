@@ -103,7 +103,7 @@ class DebugLog(object):
     def on_lobby_matching_canceled(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_finish(self, context):
+    def on_game_finish(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     # Common events to ranked battles.

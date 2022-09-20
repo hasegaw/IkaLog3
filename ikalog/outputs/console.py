@@ -71,7 +71,7 @@ class Console(object):
     def on_game_go_sign(self, context):  # "Go!"
         print(_('Go!'))
 
-    def on_game_finish(self, context):  # Finish tape
+    def on_game_finish(self, context, params):  # Finish tape
         print(_('Game End.'))
 
     # Ranked battle common events

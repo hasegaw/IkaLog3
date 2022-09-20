@@ -26,70 +26,124 @@ import numpy as np
 
 from ikalog.ml.classifier import ImageClassifier
 from ikalog.utils import *
-from ikalog.scenes.scene import Scene
+from ikalog.scenes.stateful_scene import StatefulScene
 
 
-class Spl2GameFinish(Scene):
+class ROIRect:
+    x: int
+    y: int
+    w: int
+    h: int
+
+    def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
+
+ROIs = {
+    'ja': ROIRect(970, 375, 173, 65),
+    # TODO: en
+}
+
+
+def convert_color(color, mode):
+    dest = np.zeros((1, 1, 3), dtype=np.uint8)
+    dest[:, :, 0] = color[0]
+    dest[:, :, 1] = color[1]
+    dest[:, :, 2] = color[2]
+    dest_hsv = cv2.cvtColor(dest, cv2.mode)
+    return dest_hsv[0,0,0], dest_hsv[0, 0, 1], dest_hsv[0, 0, 2]
+
+
+class Spl3GameFinish(StatefulScene):
 
     def reset(self):
-        super(Spl2GameFinish, self).reset()
+        super(Spl3GameFinish, self).reset()
 
         self._last_event_msec = - 100 * 1000
 
 
-    def match_no_cache(self, context):
-        if self.matched_in(context, 60 * 1000, attr='_last_event_msec'):
+    def match1(self, frame):
+        lang = None  # FIXME
+        roi = ROIs.get(lang) or ROIs.get('ja')
+
+        """
+        Phase 1: Check Finish! (GAME!)
+        """
+        img_mask_roi = self._finish_mask[roi.y: roi.y + roi.h, roi.x: roi.x + roi.w, 0]
+        img_roi = frame[roi.y: roi.y + roi.h, roi.x: roi.x + roi.w]
+        img_roi_hsv = cv2.cvtColor(img_roi, cv2.COLOR_BGR2HSV)
+        img_roi_v = img_roi_hsv[:, :, 2]
+        img_roi_v2 = cv2.inRange(img_roi_v, 20, 70)
+        img_finish_loss = abs(np.array(img_roi_v2, dtype=np.uint32) - (255 - img_mask_roi))
+
+
+        hist,bins = np.histogram(img_finish_loss, 2, [0, 256])
+        match_phase1 = hist[0] / np.sum(hist)   # (0.0 = no detect  ~ 1.0 = detected)
+
+        if match_phase1 < 0.9:
             return False
 
-        # if not self.find_scene_object('Spl2GameSession').matched_in(context, 20 * 1000):
-        #     return False
 
-        # if self.is_another_scene_matched(context, 'Spl2GameSession'):
-        #     return False
+        """
+        Phase 2: Check the belt
+        """
+        img_frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        img_frame_hsv_masked = img_frame_hsv & self._finish_mask
 
-        self._call_plugins('get_neutral_hue')
+        # Check the color distribution, but all of 720p pixels are too much to do that.
+        # Generate a smaller image for the detection
+        img_frame_hsv_masked_small = cv2.resize(img_frame_hsv_masked, (128, 72), img_frame_hsv_masked, cv2.INTER_NEAREST)
+        img_frame_hsv_1d = img_frame_hsv_masked_small.reshape((-1, 3)).astype(np.float32)
+
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+        flags = cv2.KMEANS_RANDOM_CENTERS
+        compactness,labels,centers = cv2.kmeans(img_frame_hsv_1d, 2, None, criteria, 10, flags)
+
+        # c == lighter one (belt color)
+        c = centers[0] if centers[0, 2] > centers[1, 2] else centers[1] 
+
+        RANGE = 10
+        img_belt_matched_h = cv2.inRange(img_frame_hsv_masked[:, :, 0], max(0, c[0] - RANGE), min(c[0] + RANGE, 255))
+        img_belt_matched_v = cv2.inRange(img_frame_hsv_masked[:, :, 2], c[2] - 30, 255)
+        img_belt_matched = img_belt_matched_h & img_belt_matched_v
+
+        img_belt_loss = abs(img_belt_matched.astype(np.int32) - self._finish_mask[:, :, 0])
+        img_belt_loss = img_belt_loss.astype(np.uint8)
+
+        hist,bins = np.histogram(img_belt_loss, 2, [0, 256])
+        phase2_matched = hist[0] / np.sum(hist)   # (0.0 = no detect  ~ 1.0 = detected)
+
+        return phase2_matched > 0.9
+
+
+    def _state_default(self, context):
         frame = context['engine']['frame']
-        
-        # TODO: Alecat: remove colour based dependency
-        # Find the areas of the image that match the neutral colour and compare them with the mask
-        hue = context['game'].get('neutral_color_hue', 152/2)
-        finish_strip_by_color = matcher.MM_COLOR_BY_HUE(
-            hue=(hue - 10, hue + 10), visibility=(100, 255))(frame)
 
-        matched = self._mask.match(finish_strip_by_color)
+        matched = self.match1(frame)
+        if matched:
+            self._last_event_msec = context['engine']['msec']
+            self._call_plugins('on_game_finish', {})
+            self._switch_state(self._state_wait_for_timeout)
+            return True
 
-        matched_predict = self._c.predict_frame(frame) >= 0
-        if matched_predict:
-            pass
-            # print("ML MODEL FOUND THE FINISH FRAME")
-        if not matched:
+
+    def _state_wait_for_timeout(self, context):
+        if self.matched_in(context, 60 * 10000, attr='_last_event_msec'):
             return False
 
-        context['game']['end_time'] = IkaUtils.getTime(context)
-        context['game']['end_offset_msec'] = context['engine']['msec']
+        self.reset()
+        return False
 
-        self._call_plugins('on_game_finish')
-        self._last_event_msec = context['engine']['msec']
-
-        return True
 
     def _analyze(self, context):
         pass
 
     def _init_scene(self, debug=False):
-        self._c = ImageClassifier()
-        self._c.load_from_file('data/spl2/spl2.game.finish.dat')
-        self._mask = IkaMatcher(
-            0, 0, 1280, 720,
-            img_file='game_finish.png',
-            threshold= 0.9,
-            orig_threshold= 0.05,
-            bg_method=matcher.MM_BLACK(visibility=(0, 215)),
-            fg_method=matcher.MM_NOT_BLACK(),
-            label='finish',
-            call_plugins=self._call_plugins,
-            debug=False
-        )
+        self._finish_mask = imread('masks/ja/v3_game_finish.png')  # FIXME
+
 
 if __name__ == "__main__":
-    Spl2GameFinish.main_func()
+    Spl3GameFinish.main_func()
