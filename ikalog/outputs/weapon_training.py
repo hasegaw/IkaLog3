@@ -38,7 +38,7 @@ class WeaponTraining(object):
     # @param context   IkaLog context
     #
 
-    def on_game_individual_result(self, context, basename=None):
+    def on_game_individual_result(self, context, params, basename=None):
         if basename is None:
             basename = time.strftime("ikabattle_%Y%m%d_%H%M", time.localtime())
         i = 0

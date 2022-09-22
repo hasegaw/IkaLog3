@@ -45,7 +45,7 @@ class DebugLog(object):
             destfile = os.path.join(self.dir, log_name)
             IkaUtils.writeScreenshot(destfile, context['engine']['frame'])
 
-    def on_frame_read_failed(self, context):
+    def on_frame_read_failed(self, context, params):
         pass
 
     # In-game typical events
@@ -63,32 +63,32 @@ class DebugLog(object):
     def on_game_chained_kill_combo(self, context):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_dead(self, context):
+    def on_game_dead(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_death_reason_identified(self, context):
+    def on_game_death_reason_identified(self, context, params):
         s = "weapon = %s" % (context['game']['last_death_reason'])
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
-    def on_game_low_ink(self, context):
+    def on_game_low_ink(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context,
             text="count=%d" % context['game']['low_ink_count'])
 
-    def on_game_inkling_state_update(self, context):
+    def on_game_inkling_state_update(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context,
                              text=str(context['game']['inkling_state']))
 
-    def on_game_go_sign(self, context):
+    def on_game_go_sign(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_game_timer_detected(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context,
                 text="timer_type=%s" % params['timer_type'])
 
-    def on_game_start(self, context):
+    def on_game_start(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_team_color(self, context):
+    def on_game_team_color(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     def on_lobby_matching(self, context, params):
@@ -108,69 +108,83 @@ class DebugLog(object):
 
     # Common events to ranked battles.
 
-    def on_game_ranked_we_lead(self, context):
+    def on_game_ranked_we_lead(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_ranked_they_lead(self, context):
+    def on_game_ranked_they_lead(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     # Ranked, Splatzone battles
 
-    def on_game_splatzone_we_got(self, context):
+    def on_game_splatzone_we_got(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_splatzone_we_lost(self, context):
+    def on_game_splatzone_we_lost(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_splatzone_they_got(self, context):
+    def on_game_splatzone_they_got(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_splatzone_they_lost(self, context):
+    def on_game_splatzone_they_lost(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     # Ranked, Rainmaker battles
 
-    def on_game_rainmaker_we_got(self, context):
+    def on_game_rainmaker_we_got(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_rainmaker_we_lost(self, context):
+    def on_game_rainmaker_we_lost(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_rainmaker_they_got(self, context):
+    def on_game_rainmaker_they_got(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_rainmaker_they_lost(self, context):
+    def on_game_rainmaker_they_lost(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     # Ranked, Tower control battles
 
-    def on_game_tower_we_got(self, context):
+    def on_game_towercontrol_we_took(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_tower_we_lost(self, context):
+    def on_game_towercontrol_we_lost(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_tower_they_got(self, context):
+    def on_game_towercontrol_they_took(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_tower_they_lost(self, context):
+    def on_game_towercontrol_they_lost(self, context, params={}):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    # Ranked, Cram Blitz battles
+
+    def on_game_cramblitz_they_back(self, context, params={}):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_cramblitz_they_broke(self, context, params={}):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_cramblitz_we_back(self, context, params={}):
+        self.write_debug_log(sys._getframe().f_code.co_name, context)
+
+    def on_game_cramblitz_we_broke(self, context, params={}):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
     # Counter / Object Tracking
 
-    def on_game_paint_score_update(self, context):
+    def on_game_paint_score_update(self, context, params):
         if 0:
             s = 'paint_score: %s' % context['game'].get('paint_score', 0)
             self.write_debug_log(sys._getframe().f_code.co_name, context,
                                  text=s)
 
-    def on_game_objective_position_update(self, context):
+    def on_game_objective_position_update(self, context, params):
         if 0:
             s = 'pos: %s' % context['game']['tower'].get('pos', 0)
             self.write_debug_log(sys._getframe().f_code.co_name, context,
                                  text=s)
 
-    def on_game_splatzone_counter_update(self, context):
+    def on_game_splatzone_counter_update(self, context, params):
         if 0:
             s = 'my_team: %s(%s), counter_team: %s(%s)' % (
                 context['game']['splatzone_my_team_counter']['value'],
@@ -182,7 +196,7 @@ class DebugLog(object):
             self.write_debug_log(sys._getframe().f_code.co_name, context,
                                  text=s)
 
-    def on_game_special_gauge_update(self, context):
+    def on_game_special_gauge_update(self, context, params):
         if 0:
             s = 'special: %spct' % (context['game']['special_gauge'])
             self.write_debug_log(sys._getframe().f_code.co_name, context,
@@ -190,20 +204,20 @@ class DebugLog(object):
 
     # Result Scenes
 
-    def on_result_map(self, context):
+    def on_result_map(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_result_judge(self, context):
+    def on_result_judge(self, context, params):
         s = "judge: %s, knockout: %s" % (
             context['game'].get('judge', None), context['game'].get('knockout', None))
 
         self.write_debug_log(sys._getframe().f_code.co_name, context,
                              text=s)
 
-    def on_game_individual_result(self, context):
+    def on_game_individual_result(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_result_udemae(self, context):
+    def on_result_udemae(self, context, params):
         result = context['scenes']['result_udemae']
         for field in result:
             if field.startswith('img_'):
@@ -212,10 +226,10 @@ class DebugLog(object):
         self.write_debug_log(
             sys._getframe().f_code.co_name, context, text=result)
 
-    def on_result_gears(self, context):
+    def on_result_gears(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_result_festa(self, context):
+    def on_result_festa(self, context, params):
         game = context['game']
         s = 'festa change: %s -> %s title_changed %s' % (
             game.get('result_festa_exp_pre', None),
@@ -226,25 +240,16 @@ class DebugLog(object):
 
     # Session end
 
-    def on_game_session_end(self, context):
+    def on_game_session_end(self, context, params):
         s = "death_reasons = %s" % (context['game']['death_reasons'])
         self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
-    def on_game_session_abort(self, context):
+    def on_game_session_abort(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    def on_game_lost_sync(self, context):
+    def on_game_lost_sync(self, context, params):
         self.write_debug_log(sys._getframe().f_code.co_name, context)
 
-    # Inkopolis
-
-    def on_inkopolis_lottery_done(self, context):
-        s = "\n  brand: %s\n  level: %d\n  new sub abilities: %s" % (
-            context['game']['downie']['brand'],
-            context['game']['downie']['level'],
-            context['game']['downie']['sub_abilities']
-        )
-        self.write_debug_log(sys._getframe().f_code.co_name, context, text=s)
 
     # output: stat.ink
     def on_output_statink_submission_done(self, context, params={}):

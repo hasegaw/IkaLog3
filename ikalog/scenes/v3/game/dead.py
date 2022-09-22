@@ -157,7 +157,7 @@ class Spl3GameDead(StatefulScene):
 
         if matched:
             context['game']['dead'] = True
-            self._call_plugins('on_game_dead')
+            self._call_plugins('on_game_dead', {})
             self.recoginize_and_vote_death_reason(context)
             self._switch_state(self._state_tracking)
 
@@ -194,9 +194,9 @@ class Spl3GameDead(StatefulScene):
             self.count_death_reason_votes(context)
 
             if 'last_death_reason' in context['game']:
-                self._call_plugins('on_game_death_reason_identified')
+                self._call_plugins('on_game_death_reason_identified', {})
 
-            self._call_plugins('on_game_respawn')
+            self._call_plugins('on_game_respawn', {})
 
         self._last_event_msec = context['engine']['msec']
         self._switch_state(self._state_default)

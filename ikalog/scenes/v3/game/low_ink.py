@@ -52,7 +52,7 @@ class Spl2GameLowInk(Scene):
                 context['game'].get('low_ink_count', 0) + 1
             self._last_event_msec = context['engine']['msec']
 
-            self._call_plugins('on_game_low_ink')
+            self._call_plugins('on_game_low_ink', {})
 
         return matched
 

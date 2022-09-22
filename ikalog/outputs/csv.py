@@ -68,7 +68,7 @@ class CSVPlugin(IkaLogPlugin):
         self.config['filename'] = config['filename']
         self.config['enabled'] = config['enabled']
 
-    def on_game_session_end(self, context):
+    def on_game_session_end(self, context, params):
         IkaUtils.dprint('%s (enabled = %s)' % (self, self.config['enabled']))
 
         if not self.config['enabled']:

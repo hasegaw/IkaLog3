@@ -90,94 +90,94 @@ class WebSocketServer(object):
             'event': 'on_game_killed'
         })
 
-    def on_game_dead(self, context):
+    def on_game_dead(self, context, params):
         self._send_message({
             'event': 'on_game_dead'
         })
 
-    def on_game_death_reason_identified(self, context):
+    def on_game_death_reason_identified(self, context, params):
         self._send_message({
             'event': 'on_death_reason_identified',
             'reason': context['game'].get('last_death_reason', ''),
         })
 
-    def on_game_go_sign(self, context):
+    def on_game_go_sign(self, context, params):
         self._send_message({
             'event': 'on_game_go_sign'
         })
 
-    def on_game_start(self, context):
+    def on_game_start(self, context, params):
         self._send_message({
             'event': 'on_game_start',
             'stage': (context['game']['map'] or 'unknown'),
             'rule': (context['game']['rule'] or 'unknown'),
         })
 
-    def on_game_team_color(self, context):
+    def on_game_team_color(self, context, params):
         self._send_message({
             'event': 'on_game_team_color',
             'my_team_color_hsv': context['game']['team_color_hsv'][0].tolist()[0],
             'counter_team_color_hsv': context['game']['team_color_hsv'][1].tolist()[0],
         })
 
-    def on_game_finish(self, context):
+    def on_game_finish(self, context, params):
         self._send_message({
             'event': 'on_game_finish',
         })
 
     # Common events to ranked battles.
 
-    def on_game_ranked_we_lead(self, context):
+    def on_game_ranked_we_lead(self, context, params):
         self._send_message({'event': 'on_game_ranked_we_lead'})
 
-    def on_game_ranked_they_lead(self, context):
+    def on_game_ranked_they_lead(self, context, params):
         self._send_message({'event': 'on_game_ranked_they_lead'})
 
     # Ranked, Splatzone battles
 
-    def on_game_splatzone_we_got(self, context):
+    def on_game_splatzone_we_got(self, context, params):
         self._send_message({'event': 'on_game_splatzone_we_got'})
 
-    def on_game_splatzone_we_lost(self, context):
+    def on_game_splatzone_we_lost(self, context, params):
         self._send_message({'event': 'on_game_splatzone_we_lost'})
 
-    def on_game_splatzone_they_got(self, context):
+    def on_game_splatzone_they_got(self, context, params):
         self._send_message({'event': 'on_game_splatzone_they_got'})
 
-    def on_game_splatzone_they_lost(self, context):
+    def on_game_splatzone_they_lost(self, context, params):
         self._send_message({'event': 'on_game_splatzone_they_lost'})
 
     # Ranked, Rainmaker battles
 
-    def on_game_rainmaker_we_got(self, context):
+    def on_game_rainmaker_we_got(self, context, params):
         self._send_message({'event': 'on_game_rainmaker_we_got'})
 
-    def on_game_rainmaker_we_lost(self, context):
+    def on_game_rainmaker_we_lost(self, context, params):
         self._send_message({'event': 'on_game_rainmaker_we_lost'})
 
-    def on_game_rainmaker_they_got(self, context):
+    def on_game_rainmaker_they_got(self, context, params):
         self._send_message({'event': 'on_game_rainmaker_they_got'})
 
-    def on_game_rainmaker_they_lost(self, context):
+    def on_game_rainmaker_they_lost(self, context, params):
         self._send_message({'event': 'on_game_rainmaker_they_lost'})
 
     # Ranked, Tower control battles
 
-    def on_game_tower_we_got(self, context):
+    def on_game_tower_we_got(self, context, params):
         self._send_message({'event': 'on_game_tower_we_got'})
 
-    def on_game_tower_we_lost(self, context):
+    def on_game_tower_we_lost(self, context, params):
         self._send_message({'event': 'on_game_tower_we_lost'})
 
-    def on_game_tower_they_got(self, context):
+    def on_game_tower_they_got(self, context, params):
         self._send_message({'event': 'on_game_tower_they_got'})
 
-    def on_game_tower_they_lost(self, context):
+    def on_game_tower_they_lost(self, context, params):
         self._send_message({'event': 'on_game_tower_they_lost'})
 
     # Counter / ObjectTracking.
 
-    def on_game_paint_score_update(self, context):
+    def on_game_paint_score_update(self, context, params):
         self._send_message({
             'event': 'on_game_paint_score_update',
             'paint_score': context['game'].get('paint_score', 0)
@@ -185,26 +185,26 @@ class WebSocketServer(object):
 
     # Result scenes.
 
-    def on_result_judge(self, context):
+    def on_result_judge(self, context, params):
         self._send_message({
             'event': 'on_result_judge',
             'judge': context['game'].get('judge', None),
             'knockout': context['game'].get('knockout', None),
         })
 
-    def on_result_udemae(self, context):
+    def on_result_udemae(self, context, params):
         # FIXME: データ追加
         self._send_message({
             'event': 'on_result_udemae',
         })
 
-    def on_result_gears(self, context):
+    def on_result_gears(self, context, params):
         # FIXME: データ追加
         self._send_message({
             'event': 'on_result_gears',
         })
 
-    def on_result_festa(self, context):
+    def on_result_festa(self, context, params):
         # FIXME: フェスの自分のタイトルが知りたい
         game = context['game']
         self._send_message({
@@ -213,7 +213,7 @@ class WebSocketServer(object):
             'festa_exp': game.get('reslut_festa_exp', None),
         })
 
-    def on_game_individual_result(self, context):
+    def on_game_individual_result(self, context, params):
         me = IkaUtils.getMyEntryFromContext(context)
         print(me)
         if me != None:
@@ -228,7 +228,7 @@ class WebSocketServer(object):
                 'weapon': me.get('weapon', None),
             })
 
-    def on_result_udemae(self, context):
+    def on_result_udemae(self, context, params):
         d = context['scenes']['result_udemae']
         self._send_message({
             'event': 'on_result_udemae',
@@ -236,40 +236,31 @@ class WebSocketServer(object):
             'udemae_exp': d.get('udemae_exp_after', None),
         })
 
-    def on_result_gears(self, context):
+    def on_result_gears(self, context, params):
         self._send_message({
             'event': 'on_result_gears',
         })
 
     # Lobby events
 
-    def on_lobby_matching(self, context):
+    def on_lobby_matching(self, context, params):
         self._send_message({
             'event': 'on_lobby_matching',
             'lobby_state': context['lobby'].get('state', None),
             'lobby_type': context['lobby'].get('type', None),
         })
 
-    def on_lobby_matched(self, context):
+    def on_lobby_matched(self, context, params):
         self._send_message({
             'event': 'on_lobby_matched',
             'lobby_state': context['lobby'].get('state', None),
             'lobby_type': context['lobby'].get('type', None),
         })
 
-    # Inkpolis events
-
-    def on_inkopolis_lottery_done(self, context):
-        self._send_message({
-            'event': 'on_inkopolis_lottery',
-            'gear_brand': context['game']['downie']['brand'],
-            'gear_level': context['game']['downie']['level'],
-            'sub_abilities': context['game']['downie']['sub_abilities'],
-        })
 
     # Session close
 
-    def on_game_session_end(self, context):
+    def on_game_session_end(self, context, params):
         self._send_message({
             'event': 'on_game_session_end',
         })

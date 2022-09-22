@@ -126,7 +126,7 @@ class Spl3PaintTracker(Scene):
             last_paint_score = context['game'].get('paint_score', 0)
             if last_paint_score < val:
                 context['game']['paint_score'] = val
-                self._call_plugins('on_game_paint_score_update')
+                self._call_plugins('on_game_paint_score_update', {})
         if 0:
             self.write_training_data(img_digits)
 

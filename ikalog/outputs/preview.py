@@ -30,7 +30,7 @@ class Screen(object):
 
     last_update = 0
 
-    def on_show_preview(self, context):
+    def on_show_preview(self, context, params):
         img = context['engine'].get('preview', context['engine']['frame'])
         img_resized = cv2.resize(img, self.video_size)
 

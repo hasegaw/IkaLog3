@@ -63,21 +63,21 @@ class Description(object):
         self._description += (message + "\n")
         self._print(self._description)
 
-    def on_reset_capture(self, context):
+    def on_reset_capture(self, context, params):
         self.reset()
 
-    def on_game_reset(self, context):
+    def on_game_reset(self, context, params):
         self.reset()
 
-    def on_game_start(self, context):
+    def on_game_start(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ステージ入場", time)
 
-    def on_game_go_sign(self, context):
+    def on_game_go_sign(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ゲーム開始", time)
 
-    def on_game_finish(self, context):
+    def on_game_finish(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ゲーム終了", time)
 
@@ -85,7 +85,7 @@ class Description(object):
         time = self.get_timestamp(context)
         self.append_description("く8彡 プレイヤーをたおした！", time)
 
-    def on_game_dead(self, context):
+    def on_game_dead(self, context, params):
         if self._last_death_time:
           self.append_description("くX彡 やられた！", self._last_death_time)
         else:
@@ -93,50 +93,50 @@ class Description(object):
 
         self._last_death_time = self.get_timestamp(context)
 
-    def on_game_death_reason_identified(self, context):
+    def on_game_death_reason_identified(self, context, params):
         reason = IkaUtils.death_reason2text(
             context['game']['last_death_reason'])
         self.append_description("くX彡 %s でやられた！" % reason,
                                 self._last_death_time)
         self._last_death_time = ""
 
-    def on_game_ranked_we_lead(self, context):
+    def on_game_ranked_we_lead(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("　　〚カウントリードした！〛", time)
 
-    def on_game_ranked_they_lead(self, context):
+    def on_game_ranked_they_lead(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("　　〚カウントリードされた！〛", time)
 
-    def on_game_splatzone_we_got(self, context):
+    def on_game_splatzone_we_got(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ガチエリア確保した！", time, type="we_got")
 
-    def on_game_splatzone_we_lost(self, context):
+    def on_game_splatzone_we_lost(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("カウントストップされた！", time, type="we_lost")
 
-    def on_game_splatzone_they_got(self, context):
+    def on_game_splatzone_they_got(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ガチエリア確保された！", time, type="they_got")
 
-    def on_game_splatzone_they_lost(self, context):
+    def on_game_splatzone_they_lost(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("カウントストップした！", time, type="they_lost")
 
-    def on_game_rainmaker_we_got(self, context):
+    def on_game_rainmaker_we_got(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ガチホコをうばった！", time, type="we_got")
 
-    def on_game_rainmaker_we_lost(self, context):
+    def on_game_rainmaker_we_lost(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ガチホコを失った！", time, type="we_lost")
 
-    def on_game_rainmaker_they_got(self, context):
+    def on_game_rainmaker_they_got(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ガチホコをうばわれた！", time, type="they_got")
 
-    def on_game_rainmaker_they_lost(self, context):
+    def on_game_rainmaker_they_lost(self, context, params):
         time = self.get_timestamp(context)
         self.append_description("ガチホコを防いだ！", time, type="they_lost")
 
@@ -147,16 +147,16 @@ class Description(object):
         self.append_description(message, time, type)
         self._first_act = False
 
-    def on_game_towercontrol_we_took(self, context):
+    def on_game_towercontrol_we_took(self, context, params):
         self.run_once(context, "ガチヤグラをうばった！", type="we_got")
 
-    def on_game_towercontrol_we_lost(self, context):
+    def on_game_towercontrol_we_lost(self, context, params):
         self.run_once(context, "ガチヤグラをもどされた！", type="we_lost")
 
-    def on_game_towercontrol_they_took(self, context):
+    def on_game_towercontrol_they_took(self, context, params):
         self.run_once(context, "ガチヤグラをうばわれた！", type="they_got")
 
-    def on_game_towercontrol_they_lost(self, context):
+    def on_game_towercontrol_they_lost(self, context, params):
         self.run_once(context, "ガチヤグラをもどした！", type="they_lost")
 
     def get_my_summary(self, context):
@@ -243,16 +243,16 @@ class Description(object):
 
         return '\n'.join(players_list)
 
-    def on_game_individual_result(self, context):
+    def on_game_individual_result(self, context, params):
         time = self.get_timestamp(context)
         self.append_description('結果発表', time)
         players = '\n' + self.get_players(context)
         self.append_description(players)
 
-    def on_result_udemae(self, context):
+    def on_result_udemae(self, context, params):
         self._print("on_result_udemae")
 
-    def on_result_gears(self, context):
+    def on_result_gears(self, context, params):
         gear_list = ['使用ギア']
         for gear in context['scenes']['result_gears']['gears']:
           gear_list.append('□ ' + IkaUtils.gear_ability2text(gear['main']))
@@ -270,7 +270,7 @@ class Description(object):
             gear_list.append('└ ' + IkaUtils.gear_ability2text(gear['sub3']))
         self.append_description('\n' + '\n'.join(gear_list))
 
-    def on_game_session_end(self, context):
+    def on_game_session_end(self, context, params):
         summary = self.get_game_summary(context)
         self._print(summary)
         self._print(self._description)
@@ -280,7 +280,7 @@ class Description(object):
           datafile.write(self._description)
         self._session_active = False
 
-    def on_game_session_abort(self, context):
+    def on_game_session_abort(self, context, params):
         # If session is not active, on_game_session_end is already called.
         # So do nothing.
         if not self._session_active:

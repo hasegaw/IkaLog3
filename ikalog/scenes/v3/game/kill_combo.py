@@ -52,7 +52,7 @@ class Spl3GameKillCombo(Scene):
             context['game']['kill_combo'] = self.chain_kill_combos
             context['game']['max_kill_combo'] = max(self.chain_kill_combos, context['game'].get('max_kill_combo', 0))
 
-            self._call_plugins('on_game_chained_kill_combo')
+            self._call_plugins('on_game_chained_kill_combo', {})
         else:
             self.chain_kill_combos = 1; 
             context['game']['kill_combo'] = self.chain_kill_combos 

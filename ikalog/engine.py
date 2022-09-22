@@ -111,10 +111,9 @@ class IkaEngine:
     def on_game_lost_sync(self, context):
         self.session_abort()
 
-    def call_plugin(self, plugin, event_name,
-                    params=None, debug=False, context=None):
-        if not context:
-            context = self.context
+    def call_plugin(self, plugin, event_name, params, debug=False,
+                    context=None):
+        context = context or self.context
 
         if hasattr(plugin, event_name):
             #logger.debug('Call  %s' % plugin.__class__.__name__)
@@ -151,7 +150,7 @@ class IkaEngine:
         for op in self.output_plugins:
             self.call_plugin(op, event_name, params, debug, context)
 
-    def call_plugins_later(self, event_name, params=None, debug=False, context=None):
+    def call_plugins_later(self, event_name, params, debug=False, context=None):
         self._event_queue.append((event_name, params, context))
 
     def read_next_frame(self, skip_frames=0):
@@ -162,7 +161,7 @@ class IkaEngine:
         frame = self.capture.read_frame()
 
         while frame is None:
-            self.call_plugins('on_frame_read_failed')
+            self.call_plugins('on_frame_read_failed', {})
             if self._stop:
                 return None, None
             cv2.waitKey(1000)
@@ -182,13 +181,13 @@ class IkaEngine:
             return None, None
 
         context['engine']['preview'] = copy.deepcopy(context['engine']['frame'])
-        self.call_plugins('on_debug_read_next_frame')
+        self.call_plugins('on_debug_read_next_frame', {})
 
         return frame, t
 
     def stop(self):
         if not self._stop:
-            self.call_plugins('on_stop')
+            self.call_plugins('on_stop', {})
         self._stop = True
 
     def is_stopped(self):
@@ -238,7 +237,7 @@ class IkaEngine:
             # Time from start_offset_msec in msec.
             'offset_msec': None,
         }
-        self.call_plugins('on_game_reset')
+        self.call_plugins('on_game_reset', {})
         self._exception_log_init(self.context)
 
     def create_context(self):
@@ -279,7 +278,7 @@ class IkaEngine:
             context['game']['end_time'] = IkaUtils.getTime(context)
             context['game']['end_offset_msec'] = context['engine']['msec']
 
-        self.call_plugins('on_game_session_end')
+        self.call_plugins('on_game_session_end', {})
         self.reset()
 
     def session_abort(self):
@@ -292,7 +291,7 @@ class IkaEngine:
             context['game']['end_time'] = IkaUtils.getTime(context)
             context['game']['end_offset_msec'] = context['engine']['msec']
 
-        self.call_plugins('on_game_session_abort')
+        self.call_plugins('on_game_session_abort', {})
         self.reset()
 
     def process_scene(self, scene):
@@ -333,7 +332,7 @@ class IkaEngine:
         if frame is None:
             return False
 
-        self.call_plugins('on_frame_read')
+        self.call_plugins('on_frame_read', {})
 
         for scene in self.scenes:
             self.process_scene(scene)
@@ -345,8 +344,8 @@ class IkaEngine:
 
         key = None
 
-        self.call_plugins('on_draw_preview')
-        self.call_plugins('on_show_preview')
+        self.call_plugins('on_draw_preview', {})
+        self.call_plugins('on_show_preview', {})
 
         # FixMe: Since on_frame_next and on_key_press has non-standard arguments,
         # self.call_plugins() doesn't work for those.
@@ -434,20 +433,20 @@ class IkaEngine:
         for scene in self.scenes:
             scene.reset()
 
-        self.call_plugins('on_reset_capture')
+        self.call_plugins('on_reset_capture', {})
 
     def set_plugins(self, plugins):
         self.output_plugins = [self]
         self.output_plugins.extend(self.scenes)
         self.output_plugins.extend(plugins)
-        self.call_plugins('on_initialize_plugin')
+        self.call_plugins('on_initialize_plugin', {})
 
     def enable_plugin(self, plugin):
         if not (plugin in self.output_plugins):
             logger.error('%s: cannot enable plugin %s' % (self, plugin))
             return False
 
-        self.call_plugin(plugin, 'on_enable')
+        self.call_plugin(plugin, 'on_enable', {})
 
     def pause(self, pause):
         self._pause = pause
@@ -456,7 +455,7 @@ class IkaEngine:
         self.scenes = initialize_scenes(self)
 
     def __del__(self):
-        self.call_plugins('on_engine_destroy')
+        self.call_plugins('on_engine_destroy', {})
 
     def __init__(self, enable_profile=False, abort_at_scene_exception=False,
                  keep_alive=False):

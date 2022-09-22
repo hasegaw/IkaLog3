@@ -157,11 +157,11 @@ class Commentator(object):
     def _read_event(self, key):
         self._read(self._get_message(key))
 
-    def on_lobby_matching(self, context):
+    def on_lobby_matching(self, context, params):
         self._read_event('lobby_matching')
 
     def on_lobby_matched(self, context):
-        self._read_event('lobby_matched')
+        self._read_event('lobby_matched', params)
 
     def on_game_start(self, context):
         map_text = IkaUtils.map2text(context['game']['map'], unknown='スプラトゥーン', languages='ja')
@@ -170,16 +170,16 @@ class Commentator(object):
         data['text'] = data['text'].format(map=map_text, rule=rule_text)
         self._read(data)
 
-    def on_game_go_sign(self, context):
+    def on_game_go_sign(self, context, params):
         self._read_event('go_sign')
 
     def on_game_killed(self, context, params):
         self._read_event('killed')
 
-    def on_game_dead(self, context):
+    def on_game_dead(self, context, params):
         self._read_event('dead')
 
-    def on_game_death_reason_identified(self, context):
+    def on_game_death_reason_identified(self, context, params):
         reason = context['game']['last_death_reason']
         if reason in oob_reasons:
             data = self._get_message('death_reason_oob')
@@ -195,10 +195,10 @@ class Commentator(object):
         return IkaUtils.death_reason2text(
             reason, self.custom_read['unknown'], 'ja')
 
-    def on_game_low_ink(self, context):
+    def on_game_low_ink(self, context, params):
         self._read_event('low_ink')
 
-    def on_game_special_gauge_charged(self, context):
+    def on_game_special_gauge_charged(self, context, params):
         self._read_event('special_charged')
 
     def on_game_special_weapon(self, context, params={}):
@@ -221,7 +221,7 @@ class Commentator(object):
     def _special_weapon_name(self, special):
         return self._death_reason_label(special)
 
-    def on_game_finish(self, context):
+    def on_game_finish(self, context, params):
         self._read_event('finish')
 
     def on_game_individual_result(self, context):
@@ -258,84 +258,50 @@ class Commentator(object):
                     )
                     self._read(data)
 
-    def on_game_session_end(self, context):
+    def on_game_session_end(self, context, params):
         self._read_event('session_end')
 
-    def on_game_session_abort(self, context):
+    def on_game_session_abort(self, context, params):
         self._read_event('session_abort')
 
-    def on_game_ranked_we_lead(self, context):
+    def on_game_ranked_we_lead(self, context, params):
         self._read_event('ranked_we_lead')
 
-    def on_game_ranked_they_lead(self, context):
+    def on_game_ranked_they_lead(self, context, params):
         self._read_event('ranked_they_lead')
 
-    def on_game_splatzone_we_got(self, context):
+    def on_game_splatzone_we_got(self, context, params):
         self._read_event('splatzone_we_got')
 
-    def on_game_splatzone_we_lost(self, context):
+    def on_game_splatzone_we_lost(self, context, params):
         self._read_event('splatzone_we_lost')
 
-    def on_game_splatzone_they_got(self, context):
+    def on_game_splatzone_they_got(self, context, params):
         self._read_event('splatzone_they_got')
 
-    def on_game_splatzone_they_lost(self, context):
+    def on_game_splatzone_they_lost(self, context, params):
         self._read_event('splatzone_they_lost')
 
-    def on_game_rainmaker_we_got(self, context):
+    def on_game_rainmaker_we_got(self, context, params):
         self._read_event('rainmaker_we_got')
 
-    def on_game_rainmaker_we_lost(self, context):
+    def on_game_rainmaker_we_lost(self, context, params):
         self._read_event('rainmaker_we_lost')
 
-    def on_game_rainmaker_they_got(self, context):
+    def on_game_rainmaker_they_got(self, context, params):
         self._read_event('rainmaker_they_got')
 
-    def on_game_rainmaker_they_lost(self, context):
+    def on_game_rainmaker_they_lost(self, context, params):
         self._read_event('rainmaker_they_lost')
 
-    def on_game_tower_we_got(self, context):
+    def on_game_tower_we_got(self, context, params):
         self._read_event('tower_we_got')
 
-    def on_game_tower_we_lost(self, context):
+    def on_game_tower_we_lost(self, context, params):
         self._read_event('tower_we_lost')
 
-    def on_game_tower_they_got(self, context):
+    def on_game_tower_they_got(self, context, params):
         self._read_event('tower_they_got')
 
-    def on_game_tower_they_lost(self, context):
+    def on_game_tower_they_lost(self, context, params):
         self._read_event('tower_they_lost')
-
-    def on_salmonrun_egg_delivered(self, context, params):
-        self._read_event('salmonrun_egg_delivered')
-
-    def on_salmonrun_game_over(self, context):
-        self._read_event('salmonrun_game_over')
-
-    def on_salmonrun_norma_reached(self, context):
-        self._read_event('salmonrun_norma_reached')
-
-    def on_salmonrun_player_dead(self, context, params):
-        self._read_event('salmonrun_player_dead')
-
-    def on_salmonrun_player_back(self, context, params):
-        self._read_event('salmonrun_player_back')
-
-    def on_salmonrun_wave_start(self, context, params):
-        data = self._get_message('salmonrun_wave_start')
-        data['text'] = data['text'].format(wave=params['wave'])
-        self._read(data)
-
-    def on_salmonrun_wave_finish(self, context):
-        self._read_event('salmonrun_wave_finish')
-
-    def on_salmonrun_game_start(self, context, params):
-        self._read_event('salmonrun_game_start')
-
-    def on_salmonrun_mr_grizz_comment(self, context, params):
-        self._read_event('salmonrun_mr_grizz_comment_%s' % params['text_id'])
-
-    def on_salmonrun_result_judge(self, context):
-        result = context.get('salmon_run', {}).get('result', 'unknown')
-        data = self._get_message('salmonrun_result_judge_%s' % result)
-        self._read(data)

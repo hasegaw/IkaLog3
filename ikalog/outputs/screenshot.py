@@ -81,7 +81,7 @@ class ScreenshotPlugin(IkaLogPlugin):
 
         self.write_screenshot(context['engine']['frame'], filename=destfile)
 
-    def on_result_judge(self, context):
+    def on_result_judge(self, context, params):
         if not self.config['enabled']:
             return
 
@@ -91,7 +91,7 @@ class ScreenshotPlugin(IkaLogPlugin):
 
         self.write_screenshot(context['game']['image_judge'], filename=destfile)
 
-    def on_result_map(self, context):
+    def on_result_map(self, context, params):
         if not self.config['enabled']:
             return
 
@@ -101,7 +101,7 @@ class ScreenshotPlugin(IkaLogPlugin):
 
         self.write_screenshot(context['game']['image_map'], filename=destfile)
 
-    def on_initialize_plugin(self, context):
+    def on_initialize_plugin(self, context, params):
         engine = context['engine']['engine']
         engine.set_service('screenshot_save', self.write_screenshot)
         engine.set_service('screenshot_memory', self.memory_screenshot)

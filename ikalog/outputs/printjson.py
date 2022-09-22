@@ -152,10 +152,10 @@ class JSONPlugin(IkaLogPlugin):
     IkaLog event handlers
     """
 
-    def on_game_go_sign(self, context):
+    def on_game_go_sign(self, context, params):
         self._open_game_session(context)
 
-    def on_game_start(self, context):
+    def on_game_start(self, context, params):
         # Fallback in the case on_game_go_sign was skipped.
         self._open_game_session(context)
 
@@ -176,10 +176,10 @@ class JSONPlugin(IkaLogPlugin):
             IkaUtils.dprint('CSV: Failed to write JSON File')
             IkaUtils.dprint(traceback.format_exc())
 
-    def on_game_session_end(self, context):
+    def on_game_session_end(self, context, params):
         self._close_game_session(context)
 
-    def on_game_session_abort(self, context):
+    def on_game_session_abort(self, context, params):
         self._close_game_session(context)
 
     def __init__(self):

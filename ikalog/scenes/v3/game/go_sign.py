@@ -52,7 +52,7 @@ class GameGoSign(Scene):
         context['game']['start_offset_msec'] = context['engine']['msec']
         print("SETTING OFFSET MSEC", context['game']['start_time'], context['engine'].get('msec'), context['game']['start_offset_msec'])
 
-        self._call_plugins('on_game_go_sign')
+        self._call_plugins('on_game_go_sign', {})
         self._last_event_msec = context['engine']['msec']
         self._last_game_start_msec = -100 * 1000
         return True

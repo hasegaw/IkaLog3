@@ -154,7 +154,7 @@ class WLED(object):
         # TODO Alecat: If requests fail, disable future requests and then poll for wled availability with incremental backoff
 
 
-    def on_game_inkling_state_update(self, context):
+    def on_game_inkling_state_update(self, context, params):
         if not self.team1_host and not self.team2_host:
             return
         
@@ -202,15 +202,15 @@ class WLED(object):
         except requests.ConnectionError:
             pass
 
-    def on_game_go_sign(self, context):
+    def on_game_go_sign(self, context, params):
         self._in_game = True
         self.colors_set = False
 
-    def on_game_finish(self, context):
+    def on_game_finish(self, context, params):
         self._in_game = False
-        self.light_team_color(context)
+        self.light_team_color(context, params)
 
-    def on_result_judge(self, context):
+    def on_result_judge(self, context, params):
         team1_win = context['game']['won']
         team1_segments = []
         team2_segments = []
