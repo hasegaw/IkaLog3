@@ -88,7 +88,7 @@ class Spl3GameFinish(StatefulScene):
 
 
         """
-        Phase 2: Check the belt
+        Phase 2: Check the belt on black bg
         """
         img_frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         img_frame_hsv_masked = img_frame_hsv & self._finish_mask
@@ -102,27 +102,33 @@ class Spl3GameFinish(StatefulScene):
         flags = cv2.KMEANS_RANDOM_CENTERS
         compactness,labels,centers = cv2.kmeans(img_frame_hsv_1d, 2, None, criteria, 10, flags)
 
-        # c == lighter one (belt color)
-        c = centers[0] if centers[0, 2] > centers[1, 2] else centers[1] 
+        if centers[0, 2] < centers[1, 2]:
+            c_black = centers[0]
+            c_tape = centers[1]
+        else:
+            c_black = centers[1]
+            c_tape = centers[0]
 
         RANGE = 10
-        img_belt_matched_h = cv2.inRange(img_frame_hsv_masked[:, :, 0], max(0, c[0] - RANGE), min(c[0] + RANGE, 255))
-        img_belt_matched_v = cv2.inRange(img_frame_hsv_masked[:, :, 2], c[2] - 30, 255)
-        img_belt_matched = img_belt_matched_h & img_belt_matched_v
+        tape_hue = max(0, c_tape[0] - RANGE), min(c_tape[0] + RANGE, 255)
+        tape_vis = (30, 255)
 
-        img_belt_loss = abs(img_belt_matched.astype(np.int32) - self._finish_mask[:, :, 0])
-        img_belt_loss = img_belt_loss.astype(np.uint8)
+        bg_method=matcher.MM_COLOR_BY_HUE(hue=tape_hue, visibility=tape_vis)
+        self._mask_finish.bg_method=bg_method
+        matched = self._mask_finish.match(frame)
 
-        hist,bins = np.histogram(img_belt_loss, 2, [0, 256])
-        phase2_matched = hist[0] / np.sum(hist)   # (0.0 = no detect  ~ 1.0 = detected)
-
-        return phase2_matched > 0.9
+        return matched
 
 
     def _state_default(self, context):
         frame = context['engine']['frame']
 
         matched = self.match1(frame)
+        if 0:
+            preview = context['engine']['preview']
+            cv2.putText(preview, "game_finish %s" % matched, (100, 100),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
         if matched:
             self._last_event_msec = context['engine']['msec']
             self._call_plugins('on_game_finish', {})
@@ -131,6 +137,14 @@ class Spl3GameFinish(StatefulScene):
 
 
     def _state_wait_for_timeout(self, context):
+        # detection test only
+        frame = context['engine']['frame']
+        matched = self.match1(frame)
+        if 0:
+            preview = context['engine']['preview']
+            cv2.putText(preview, "game_finish %s" % matched, (100, 100),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
         if self.matched_in(context, 60 * 10000, attr='_last_event_msec'):
             return False
 
@@ -143,6 +157,20 @@ class Spl3GameFinish(StatefulScene):
 
     def _init_scene(self, debug=False):
         self._finish_mask = imread('masks/ja/v3_game_finish.png')  # FIXME
+
+        # fg = black, bg = tape color
+        self._mask_finish = IkaMatcher(
+            0, 0, 1280, 720,
+            #553, 59, 134, 25,
+            img_file='v3_game_finish.png',
+            threshold=0.95,
+            orig_threshold=0.1,
+            bg_method=None,  # To be overrided
+            fg_method=matcher.MM_BLACK(),
+            label="finish",
+            call_plugins=self._call_plugins,
+            debug=False,
+        )
 
 
 if __name__ == "__main__":
