@@ -102,6 +102,13 @@ def _init_source(opts):
         source.select_source(index=0)
         return source
 
+    if input_type == 'YouTube':
+        from ikalog.inputs.youtube import YouTubeInput
+
+        url = input_args.get('url')
+        source = YouTubeInput(url)
+        return source
+
     if input_type == 'ui':
         from ikalog.inputs.capture import Capture
         source = Capture()
