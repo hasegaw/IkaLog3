@@ -173,6 +173,7 @@ class IkaEngine:
 
         if frame.shape[0] == 720:
             context['engine']['frame'] = frame
+            context['engine']['frame_hd'] = cv2.resize(frame, (1920, 1080))  # :/
         elif frame.shape[0] == 1080:
             context['engine']['frame_hd'] = frame
             context['engine']['frame'] = cv2.resize(frame, (1280, 720))
