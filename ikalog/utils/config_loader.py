@@ -26,7 +26,10 @@ except:
 
 from ikalog import inputs
 from ikalog import outputs
+import logging
 
+
+logger = logging.getLogger()
 
 def _init_source(opts):
     # 使いたい入力を設定
@@ -36,6 +39,8 @@ def _init_source(opts):
     input_type = (opts.get('input') or IkaConfig.INPUT_SOURCE)
     if opts.get('input_file'):
         input_type = 'CVFile'
+    if opts.get('input_url'):
+        input_type = 'YouTube'
     if not input_type:
         input_type = 'GStreamer'
 
@@ -105,8 +110,10 @@ def _init_source(opts):
     if input_type == 'YouTube':
         from ikalog.inputs.youtube import YouTubeInput
 
-        url = input_args.get('url')
+        url = opts.get('input_url') or input_args.get('url')
+        logger.info(f"YouTube Streaming from {url}")
         source = YouTubeInput(url)
+        source.set_frame_rate(input_args.get('frame_rate'))
         return source
 
     if input_type == 'ui':

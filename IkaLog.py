@@ -47,6 +47,8 @@ def get_args():
     parser.add_argument('--input', '-i', dest='input', type=str,
                         choices=['DirectShow', 'CVCapture', 'ScreenCapture',
                                  'AVFoundationCapture', 'CVFile'])
+    parser.add_argument('--input_url', '-u', dest='input_url', type=str,
+                        help='Input YouTube video url. ')
     parser.add_argument('--input_file', '-f', dest='input_file', type=str,
                         nargs='*', help='Input video file. '
                         'Other flags can refer this flag as __INPUT_FILE__')
