@@ -36,12 +36,24 @@ class YouTubeInput(VideoInput):
         super(YouTubeInput, self).__init__()
         print("%s: opening YouTube Video %s", self, url)
         yt = YouTube(url)
-        streams = yt.streams.filter(res="1080p")
+        streams = yt.streams.filter(res="1080p", video_codec="vp9")
         if len(streams):
             W, H = 1920, 1080
-        else:
+
+        if len(streams) == 0:
+            streams = yt.streams.filter(res="720p", video_codec="vp9")
+            if len(streams):
+                W, H = 1280, 720
+
+        if len(streams) == 0:
+            streams = yt.streams.filter(res="1080p")
+            if len(streams):
+                W, H = 1920, 1080
+
+        if len(streams) == 0:
             streams = yt.streams.filter(res="720p")
-            W, H = 1280, 720
+            if len(streams):
+                W, H = 1280, 720
 
         if len(streams) == 0:
             raise Exception("no applicable stream available")
