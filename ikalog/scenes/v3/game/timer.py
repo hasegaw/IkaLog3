@@ -360,39 +360,6 @@ class Spl3GameTimer(StatefulScene):
     def _init_scene(self, debug=False):
         self._overtime = False
 
-        self.perfect_mask = IkaMatcher(
-            589, y0, 109, y3 - y0,
-            img_file='v2_game_timer_icon.png',
-            threshold=0.95,
-            orig_threshold=1.0,
-            bg_method=matcher.MM_DARK(),
-            fg_method=matcher.MM_BLACK(),
-            label='timer_icon_top',
-            debug=debug,
-        )
-        self._masks = [
-            IkaMatcher(
-                589, y0, 109, y1 - y0,
-                img_file='v2_game_timer_icon.png',
-                threshold=0.95,
-                orig_threshold=1.0,
-                bg_method=matcher.MM_DARK(),
-                fg_method=matcher.MM_BLACK(),
-                label='timer_icon_top',
-                debug=debug,
-            ),
-
-            IkaMatcher(
-                589, y2, 109, y3 - y2,
-                img_file='v2_game_timer_icon.png',
-                threshold=0.95,
-                orig_threshold=1.0,
-                bg_method=matcher.MM_DARK(),
-                fg_method=matcher.MM_BLACK(),
-                label='timer_icon_bottom',
-                debug=debug,
-            ),
-        ]
         self._mask_overtime = IkaMatcher(
             585, y1, 109, y2 - y1,
             img_file='v2_game_timer_overtime.png',
