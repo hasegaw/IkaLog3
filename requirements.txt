@@ -7,3 +7,4 @@ requests
 requests_oauthlib
 tornado==4.2
 obs-websocket-py
+pytube
